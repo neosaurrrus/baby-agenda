@@ -4,3 +4,14 @@ body {
     color: #333333;
 }
 
+#activity-show{
+
+    background-color: rgba(50,50,50,0.8);
+    margin: 0 auto;
+    width: 80%;
+    z-index:100;
+    position: absolute;
+    left: 10%;
+    top:33%;
+}
+
