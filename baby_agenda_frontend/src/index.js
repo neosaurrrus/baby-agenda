@@ -1,3 +1,5 @@
+const ACTIVITIES_URL = "http://localhost:3000/activities"
+
 
 class Fetcher {
     constructor(url){
@@ -19,7 +21,7 @@ class Activity {
         this.render()
     }
     static index(){
-        const allActivities =  new Fetcher("http://localhost:3000/activities")
+        const allActivities =  new Fetcher(ACTIVITIES_URL)
         allActivities.then( activity => {
             activity.forEach(activity => {
                 return new Activity(activity)
@@ -67,16 +69,108 @@ class ActivityShow {
     }
     //need to add remove event listeners to stop the 2 activites bug
     static showCloseEvent(){
-    
         const showCloseButton = document.getElementById(`show-close-button`)
         showCloseButton.addEventListener("click", (e) => {
-            document.getElementById(`activity-show`).remove()
+            document.getElementById(`activity-splash`).remove()
+        })
+    }
+    static showEditEvent(){
+        const showEditButton = document.getElementById(`show-edit-button`)
+        showEditButton.addEventListener("click", (e) => {
+            document.getElementById(`activity-splash`).innerHTML = ""
+            ActivityShow.renderEditActivityForm()
+
         })
     }
 
     static hideShow(){
         document.getElementById(`activity-show`).style.display = "none"
     }
+
+    static renderEditActivityForm(){
+        //splash
+        const edit_activity_node = document.createElement("div")
+        edit_activity_node.setAttribute(`id`,`activity-splash`)
+        //title
+        const edit_activity_title_node = document.createElement("h3")
+        const edit_activity_title_node_text = document.createTextNode("edit a New Activity")
+        edit_activity_title_node.appendChild(edit_activity_title_node_text)
+        //actual form
+        const editActivityForm = document.createElement("div")
+        editActivityForm.innerHTML = `
+            <form id="edit-activity-form"> 
+            <label for="edit_activity_name">Name:</label>
+            <input type="text" id="edit_activity_name" value="k" placeholder="Enter a short name for the activity">
+            <label for="edit_activity_description">Description:</label>
+            <input type="text" id="edit_activity_description" placeholder="Describe the activity">
+            <label for="edit_activity_age">Minimum Recommended Age:</label>
+            <select name="edit_activity_age" id="edit_activity_age">
+                <option value="under6">Less than 6 Months</option>
+                <option value="6-12">6-12 Months</option>
+                <option value="12-24">12-24 Months</option>
+                <option value="over24">Over 24 Months</option>
+            </select>
+            <label for="edit_activity_time">how long does it take?</label>
+            <select name="edit_activity_time" id="edit_activity_time">
+                <option value="under10">Less than 10 Minutes</option>
+                <option value="10-30">10-30 Minutes</option>
+                <option value="30-60">30-60 Minutes</option>
+                <option value="over60">Over 60 Minutes</option>
+            </select>
+            <input type="submit" id="edit-activity-submit">
+            </form>
+        `
+        
+        const edit_activity_close_node = document.createElement("button")
+        edit_activity_close_node.setAttribute(`id`,`edit-cancel-button`)
+        const edit_activity_close_node_text = document.createTextNode("Cancel")
+        edit_activity_close_node.appendChild(edit_activity_close_node_text)
+
+
+        edit_activity_node.appendChild(edit_activity_title_node)
+        edit_activity_node.appendChild(editActivityForm)
+        edit_activity_node.appendChild(edit_activity_close_node)
+        
+        
+        document.getElementById("activities-wrapper").appendChild(edit_activity_node)
+        ActivityShow.editCancelEvent()
+        ActivityShow.editSubmitEvent()
+    }
+
+    static editCancelEvent(){
+        const button = document.getElementById(`edit-cancel-button`)
+        button.addEventListener("click", (e) => {
+            document.getElementById(`activity-splash`).remove()
+        })
+    }
+    static editSubmitEvent(e){
+        const form = document.getElementById(`edit-activity-form`)
+        form.addEventListener("submit", (e) => {
+            e.preventDefault()
+            ActivityShow.submitEditActivity(e)
+        })
+    }
+    static submitEditActivity(e){
+        const data = {
+            name:e.target[0].value, 
+            description:e.target[1].value,
+            minimum_age:e.target[2].value,
+            minimum_time_taken:e.target[3].value
+        } 
+        console.log(e)
+        fetch(ACTIVITIES_URL+"/1", {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(data)
+        })
+        .then(resp => resp.json())
+        .then(res => console.log(res))
+        .catch(err => console.log(err))
+    }
+
 
     static render(a){
         const activity_node = document.createElement("div")
@@ -109,14 +203,22 @@ class ActivityShow {
         const activity_downvotes_node_text = document.createTextNode(a.downvotes)
         activity_downvotes_node.appendChild(activity_downvotes_node_text)
         activity_node.appendChild(activity_downvotes_node)
-        //Details Button
-        const activity_details_node = document.createElement("button")
-        activity_details_node.setAttribute(`id`,`show-close-button`)
-        const activity_details_node_text = document.createTextNode("Close")
-        activity_details_node.appendChild(activity_details_node_text)
-        activity_node.appendChild(activity_details_node)
+        
+        //edit button
+        const activity_edit_node = document.createElement("button")
+        activity_edit_node.setAttribute(`id`,`show-edit-button`)
+        const activity_edit_node_text = document.createTextNode("Edit")
+        activity_edit_node.appendChild(activity_edit_node_text)
+        activity_node.appendChild(activity_edit_node)
+        //delete
+        const activity_close_node = document.createElement("button")
+        activity_close_node.setAttribute(`id`,`show-close-button`)
+        const activity_close_node_text = document.createTextNode("Close")
+        activity_close_node.appendChild(activity_close_node_text)
+        activity_node.appendChild(activity_close_node)
         document.getElementById("activities-wrapper").appendChild(activity_node)
         ActivityShow.showCloseEvent()
+        ActivityShow.showEditEvent()
     
     }
 
@@ -148,7 +250,7 @@ class NewActivity {
         //actual form
         const addActivityForm = document.createElement("div")
         addActivityForm.innerHTML = `
-            <form id="add_activity_form"> 
+            <form id="add-activity-form"> 
             <label for="add_activity_name">Name:</label>
             <input type="text" id="add_activity_name" placeholder="Enter a short name for the activity">
             <label for="add_activity_description">Description:</label>
@@ -160,7 +262,7 @@ class NewActivity {
                 <option value="12-24">12-24 Months</option>
                 <option value="over24">Over 24 Months</option>
             </select>
-        
+            <label for="add_activity_time">how long does it take?</label>
             <select name="add_activity_time" id="add_activity_time">
                 <option value="under10">Less than 10 Minutes</option>
                 <option value="10-30">10-30 Minutes</option>
@@ -175,6 +277,7 @@ class NewActivity {
         add_activity_close_node.setAttribute(`id`,`add-cancel-button`)
         const add_activity_close_node_text = document.createTextNode("Cancel")
         add_activity_close_node.appendChild(add_activity_close_node_text)
+
 
         add_activity_node.appendChild(add_activity_title_node)
         add_activity_node.appendChild(addActivityForm)
@@ -201,16 +304,30 @@ class NewActivity {
         })
     }
     addSubmitEvent(e){
-        console.log(document.getElementById('add-activity-submit'))
-        const button = document.getElementById(`add-activity-submit`)
-  
-        button.addEventListener("click", (e) => {
+        const form = document.getElementById(`add-activity-form`)
+        form.addEventListener("submit", (e) => {
             e.preventDefault()
             this.submitNewActivity(e)
         })
     }
     submitNewActivity(e){
-        console.log(e)
+        const data = {
+            name:e.target[0].value, 
+            description:e.target[1].value,
+            minimum_age:e.target[2].value,
+            minimum_time_taken:e.target[3].value
+        } 
+        fetch(ACTIVITIES_NEW_URL, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(data)
+        })
+        .then(resp => resp.json())
+        .then(res => new Activity(res))
+        .catch(err => console.log(err))
     }
 }
 
@@ -218,7 +335,7 @@ class NewActivity {
 //Things that run (maybe all in an init afterwards)
 new NewActivity()
 Activity.index()
-//something to set add activity button
+
 
 //something to build agenda
 
