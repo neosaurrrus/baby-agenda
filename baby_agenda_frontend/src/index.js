@@ -32,7 +32,10 @@ class Activity {
     setDetailsEvent(){
         const detailsButton = document.getElementById(`details-button-${this.id}`)
         detailsButton.addEventListener("click", (e) => {
-            ActivityShow.fetchDetails(this.id)
+            const act =  new Fetcher(`http://localhost:3000/activities/${this.id}`)
+            act.then( a => {
+                new ActivityShow(a)
+            })
         })
     }
 
@@ -58,36 +61,38 @@ class Activity {
 
 class ActivityShow {
     constructor(activity){
-        this.render(activity)
+        this.name = activity.name,
+        this.id = activity.id,
+        this.description = activity.description,
+        this.minimum_age = activity.minimum_age,
+        this.minimum_time_taken = activity.minimum_time_taken,
+        this.upvotes = activity.upvotes,
+        this.downvotes = activity.downvotes
+        this.render()
     }
-    static fetchDetails(id){
-        const act =  new Fetcher(`http://localhost:3000/activities/${id}`)
-        act.then( a => {
-              
-                ActivityShow.render(a)
-            })
-    }
+
+  
     //need to add remove event listeners to stop the 2 activites bug
-    static showCloseEvent(){
+     showCloseEvent(){
         const showCloseButton = document.getElementById(`show-close-button`)
         showCloseButton.addEventListener("click", (e) => {
             document.getElementById(`activity-splash`).remove()
         })
     }
-    static showEditEvent(){
+    showEditEvent(){
         const showEditButton = document.getElementById(`show-edit-button`)
         showEditButton.addEventListener("click", (e) => {
             document.getElementById(`activity-splash`).innerHTML = ""
-            ActivityShow.renderEditActivityForm()
+            this.renderEditActivityForm()
 
         })
     }
 
-    static hideShow(){
+    hideShow(){
         document.getElementById(`activity-show`).style.display = "none"
     }
 
-    static renderEditActivityForm(){
+    renderEditActivityForm(){
         //splash
         const edit_activity_node = document.createElement("div")
         edit_activity_node.setAttribute(`id`,`activity-splash`)
@@ -100,24 +105,25 @@ class ActivityShow {
         editActivityForm.innerHTML = `
             <form id="edit-activity-form"> 
             <label for="edit_activity_name">Name:</label>
-            <input type="text" id="edit_activity_name" value="k" placeholder="Enter a short name for the activity">
+            <input type="text" id="edit_activity_name" value="${this.name}" placeholder="Enter a short name for the activity">
             <label for="edit_activity_description">Description:</label>
-            <input type="text" id="edit_activity_description" placeholder="Describe the activity">
+            <input type="text" id="edit_activity_description" value="${this.description}" placeholder="Describe the activity">
             <label for="edit_activity_age">Minimum Recommended Age:</label>
-            <select name="edit_activity_age" id="edit_activity_age">
+            <select name="edit_activity_age" id="edit_activity_age" value="${this.minimum_age}>
                 <option value="under6">Less than 6 Months</option>
                 <option value="6-12">6-12 Months</option>
                 <option value="12-24">12-24 Months</option>
                 <option value="over24">Over 24 Months</option>
             </select>
             <label for="edit_activity_time">how long does it take?</label>
-            <select name="edit_activity_time" id="edit_activity_time">
+            <select name="edit_activity_time" id="edit_activity_time" value=${this.minimum_time_taken}>
                 <option value="under10">Less than 10 Minutes</option>
                 <option value="10-30">10-30 Minutes</option>
                 <option value="30-60">30-60 Minutes</option>
                 <option value="over60">Over 60 Minutes</option>
             </select>
             <input type="submit" id="edit-activity-submit">
+            <input type="hidden" id="edit-activity-id" value=${this.id} >
             </form>
         `
         
@@ -133,32 +139,33 @@ class ActivityShow {
         
         
         document.getElementById("activities-wrapper").appendChild(edit_activity_node)
-        ActivityShow.editCancelEvent()
-        ActivityShow.editSubmitEvent()
+        this.editCancelEvent()
+        this.editSubmitEvent()
     }
 
-    static editCancelEvent(){
+    editCancelEvent(){
         const button = document.getElementById(`edit-cancel-button`)
         button.addEventListener("click", (e) => {
             document.getElementById(`activity-splash`).remove()
         })
     }
-    static editSubmitEvent(e){
+    editSubmitEvent(e){
         const form = document.getElementById(`edit-activity-form`)
         form.addEventListener("submit", (e) => {
             e.preventDefault()
-            ActivityShow.submitEditActivity(e)
+            this.submitEditActivity(e)
         })
     }
-    static submitEditActivity(e){
+    submitEditActivity(e){
         const data = {
             name:e.target[0].value, 
             description:e.target[1].value,
             minimum_age:e.target[2].value,
-            minimum_time_taken:e.target[3].value
+            minimum_time_taken:e.target[3].value,   
+            id:e.target[5].value
         } 
-        console.log(e)
-        fetch(ACTIVITIES_URL+"/1", {
+        console.log(data.id + ACTIVITIES_URL)
+        fetch(ACTIVITIES_URL+`/${data.id}`, {
             method: 'PUT',
             headers: {
                 "Content-Type": "application/json",
@@ -171,36 +178,53 @@ class ActivityShow {
         .catch(err => console.log(err))
     }
 
+    static submitDeleteActivity(e){
+        const data = {
+            id:e.target[5].value, 
+        } 
+        fetch(ACTIVITIES_URL+`/${data.id}`, {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(data)
+        })
+        .then(resp => resp.json())
+        .then(res => console.log(res))
+        .catch(err => console.log(err))
+    }
 
-    static render(a){
+
+    render(){
         const activity_node = document.createElement("div")
         activity_node.setAttribute(`id`,`activity-splash`)
         const activity_name_node = document.createElement("h3")
-        const activity_name_node_text = document.createTextNode(a.name)
+        const activity_name_node_text = document.createTextNode(this.name)
         activity_name_node.appendChild(activity_name_node_text)
         activity_node.appendChild(activity_name_node)
         const activity_description_node = document.createElement("p")
-        const activity_description_node_text = document.createTextNode(a.description)
+        const activity_description_node_text = document.createTextNode(this.description)
         activity_description_node.appendChild(activity_description_node_text)
         activity_node.appendChild(activity_description_node)
 
         const activity_minimum_age_node = document.createElement("p")
-        const activity_minimum_age_node_text = document.createTextNode(a.minimum_age)
+        const activity_minimum_age_node_text = document.createTextNode(this.minimum_age)
         activity_minimum_age_node.appendChild(activity_minimum_age_node_text)
         activity_node.appendChild(activity_minimum_age_node)
 
         const activity_minimum_time_taken_node = document.createElement("p")
-        const activity_minimum_time_taken_node_text = document.createTextNode(a.minimum_time_taken)
+        const activity_minimum_time_taken_node_text = document.createTextNode(this.minimum_time_taken)
         activity_minimum_time_taken_node.appendChild(activity_minimum_time_taken_node_text)
         activity_node.appendChild(activity_minimum_time_taken_node)
 
         const activity_upvotes_node = document.createElement("p")
-        const activity_upvotes_node_text = document.createTextNode(a.upvotes)
+        const activity_upvotes_node_text = document.createTextNode(this.upvotes)
         activity_upvotes_node.appendChild(activity_upvotes_node_text)
         activity_node.appendChild(activity_upvotes_node)
 
         const activity_downvotes_node = document.createElement("p")
-        const activity_downvotes_node_text = document.createTextNode(a.downvotes)
+        const activity_downvotes_node_text = document.createTextNode(this.downvotes)
         activity_downvotes_node.appendChild(activity_downvotes_node_text)
         activity_node.appendChild(activity_downvotes_node)
         
@@ -217,12 +241,35 @@ class ActivityShow {
         activity_close_node.appendChild(activity_close_node_text)
         activity_node.appendChild(activity_close_node)
         document.getElementById("activities-wrapper").appendChild(activity_node)
-        ActivityShow.showCloseEvent()
-        ActivityShow.showEditEvent()
+        this.showCloseEvent()
+        this.showEditEvent()
     
     }
 
 } //end of ActivityShow
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class NewActivity {

@@ -1,19 +1,33 @@
-add id for id of eact activity rendered.
+
+# Basics
+
+Create - done
+
+Read - done
+
+Update - done
+- Populate form with existing values.
+
+Delete - NEXT
+
+# User Stuff
+
+1. Login Logout buttons
+2. Controller/Model
+3. Agenda add/delete
 
 
-Create -
 
-1. Ruby backend route 
-2. new button that pops up a form
-3. form on submit event fetch
+# Refactoring
 
-Read - 
+1. Revisit Class Structures
+2. Variable naming convention
+3. DRY up WET Code. 
 
-1. Button to view more
-2. splashbox with more details
 
-Update
 
-1. Ruby route
-2. Add buttons for Upvote/Downvote
-3. Is upvote and downvotes its own route as guests cant do it but everyone else can?
+# Styling 
+
+1. Research palette/fonts
+2. Research UI Elements
+3. Consider (minor) sAnimations
