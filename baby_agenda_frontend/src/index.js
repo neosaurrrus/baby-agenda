@@ -68,7 +68,7 @@ class ActivityShow {
         this.minimum_time_taken = activity.minimum_time_taken,
         this.upvotes = activity.upvotes,
         this.downvotes = activity.downvotes
-        this.render()
+        this.renderActivityShow()
     }
 
   
@@ -84,6 +84,14 @@ class ActivityShow {
         showEditButton.addEventListener("click", (e) => {
             document.getElementById(`activity-splash`).innerHTML = ""
             this.renderEditActivityForm()
+
+        })
+    }
+    showDeleteEvent(){
+        const showDeleteButton = document.getElementById(`show-delete-button`)
+        showDeleteButton.addEventListener("click", (e) => {
+            document.getElementById(`activity-splash`).innerHTML = ""
+            this.submitDeleteActivity(e)
 
         })
     }
@@ -178,11 +186,11 @@ class ActivityShow {
         .catch(err => console.log(err))
     }
 
-    static submitDeleteActivity(e){
+    submitDeleteActivity(){
         const data = {
-            id:e.target[5].value, 
+            id:this.id, 
         } 
-        fetch(ACTIVITIES_URL+`/${data.id}`, {
+        fetch(ACTIVITIES_URL+`/${this.id}`, {
             method: 'DELETE',
             headers: {
                 "Content-Type": "application/json",
@@ -196,7 +204,7 @@ class ActivityShow {
     }
 
 
-    render(){
+    renderActivityShow(){
         const activity_node = document.createElement("div")
         activity_node.setAttribute(`id`,`activity-splash`)
         const activity_name_node = document.createElement("h3")
@@ -235,6 +243,15 @@ class ActivityShow {
         activity_edit_node.appendChild(activity_edit_node_text)
         activity_node.appendChild(activity_edit_node)
         //delete
+        const activity_delete_node = document.createElement("button")
+        activity_delete_node.setAttribute(`id`,`show-delete-button`)
+        const activity_delete_node_text = document.createTextNode("delete")
+        activity_delete_node.appendChild(activity_delete_node_text)
+        activity_node.appendChild(activity_delete_node)
+
+
+
+
         const activity_close_node = document.createElement("button")
         activity_close_node.setAttribute(`id`,`show-close-button`)
         const activity_close_node_text = document.createTextNode("Close")
@@ -243,6 +260,7 @@ class ActivityShow {
         document.getElementById("activities-wrapper").appendChild(activity_node)
         this.showCloseEvent()
         this.showEditEvent()
+        this.showDeleteEvent()
     
     }
 
