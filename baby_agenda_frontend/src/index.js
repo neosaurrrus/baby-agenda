@@ -1,10 +1,16 @@
 const ACTIVITIES_URL = "http://localhost:3000/activities"
 
 
-class Fetcher {
-    constructor(url){
+class Helper {
+    static fetcher(url){
         return fetch(url)
         .then (res =>res.json())
+    }
+
+    static refresh(){
+        document.getElementById(`activity-splash`).remove()
+        document.getElementById(`activities-wrapper`).innerHTML = ""
+        Activity.all()
     }
 }
 
@@ -13,15 +19,13 @@ class Activity {
     constructor(activity){
         this.name = activity.name,
         this.id = activity.id,
-        this.description = activity.description,
-        this.minimum_age = activity.minimum_age,
-        this.minimum_time_taken = activity.minimum_time_taken,
         this.upvotes = activity.upvotes,
         this.downvotes = activity.downvotes
         this.render()
     }
-    static index(){
-        const allActivities =  new Fetcher(ACTIVITIES_URL)
+
+    static all(){
+        const allActivities = Helper.fetcher(ACTIVITIES_URL)
         allActivities.then( activity => {
             activity.forEach(activity => {
                 return new Activity(activity)
@@ -29,10 +33,10 @@ class Activity {
         })
     }
 
-    setDetailsEvent(){
-        const detailsButton = document.getElementById(`details-button-${this.id}`)
+    setShowButtonEvent(){
+        const detailsButton = document.getElementById(`show-button-${this.id}`)
         detailsButton.addEventListener("click", (e) => {
-            const act =  new Fetcher(`http://localhost:3000/activities/${this.id}`)
+            const act =  Helper.fetcher(`http://localhost:3000/activities/${this.id}`)
             act.then( a => {
                 new ActivityShow(a)
             })
@@ -48,18 +52,18 @@ class Activity {
 
         
         //Details Button
-        const activity_details_node = document.createElement("button")
-        activity_details_node.setAttribute(`id`,`details-button-${this.id}`)
-        const activity_details_node_text = document.createTextNode("Details")
-        activity_details_node.appendChild(activity_details_node_text)
-        activity_node.appendChild(activity_details_node)
+        const activity_show_node = document.createElement("button")
+        activity_show_node.setAttribute(`id`,`show-button-${this.id}`)
+        const activity_show_node_text = document.createTextNode("Details")
+        activity_show_node.appendChild(activity_show_node_text)
+        activity_node.appendChild(activity_show_node)
         document.getElementById("activities-wrapper").appendChild(activity_node)
-        this.setDetailsEvent()
+        this.setShowButtonEvent()
     }
     
 }
 
-class ActivityShow {
+class ActivityShow { 
     constructor(activity){
         this.name = activity.name,
         this.id = activity.id,
@@ -76,13 +80,12 @@ class ActivityShow {
      showCloseEvent(){
         const showCloseButton = document.getElementById(`show-close-button`)
         showCloseButton.addEventListener("click", (e) => {
-            document.getElementById(`activity-splash`).remove()
+            Helper.refresh()
         })
     }
     showEditEvent(){
         const showEditButton = document.getElementById(`show-edit-button`)
         showEditButton.addEventListener("click", (e) => {
-            document.getElementById(`activity-splash`).innerHTML = ""
             this.renderEditActivityForm()
 
         })
@@ -90,14 +93,8 @@ class ActivityShow {
     showDeleteEvent(){
         const showDeleteButton = document.getElementById(`show-delete-button`)
         showDeleteButton.addEventListener("click", (e) => {
-            document.getElementById(`activity-splash`).innerHTML = ""
             this.submitDeleteActivity(e)
-
         })
-    }
-
-    hideShow(){
-        document.getElementById(`activity-show`).style.display = "none"
     }
 
     renderEditActivityForm(){
@@ -154,7 +151,7 @@ class ActivityShow {
     editCancelEvent(){
         const button = document.getElementById(`edit-cancel-button`)
         button.addEventListener("click", (e) => {
-            document.getElementById(`activity-splash`).remove()
+            Helper.refresh()
         })
     }
     editSubmitEvent(e){
@@ -172,7 +169,6 @@ class ActivityShow {
             minimum_time_taken:e.target[3].value,   
             id:e.target[5].value
         } 
-        console.log(data.id + ACTIVITIES_URL)
         fetch(ACTIVITIES_URL+`/${data.id}`, {
             method: 'PUT',
             headers: {
@@ -182,8 +178,9 @@ class ActivityShow {
             body: JSON.stringify(data)
         })
         .then(resp => resp.json())
-        .then(res => console.log(res))
+        .then(Helper.refresh())
         .catch(err => console.log(err))
+
     }
 
     submitDeleteActivity(){
@@ -199,8 +196,9 @@ class ActivityShow {
             body: JSON.stringify(data)
         })
         .then(resp => resp.json())
-        .then(res => console.log(res))
+        .then(Helper.refresh())
         .catch(err => console.log(err))
+    
     }
 
 
@@ -265,29 +263,6 @@ class ActivityShow {
     }
 
 } //end of ActivityShow
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class NewActivity {
@@ -365,7 +340,7 @@ class NewActivity {
     addCancelEvent(){
         const button = document.getElementById(`add-cancel-button`)
         button.addEventListener("click", (e) => {
-            document.getElementById(`activity-splash`).remove()
+            Helper.refresh()
         })
     }
     addSubmitEvent(e){
@@ -399,7 +374,7 @@ class NewActivity {
 
 //Things that run (maybe all in an init afterwards)
 new NewActivity()
-Activity.index()
+Activity.all()
 
 
 //something to build agenda
