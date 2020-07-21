@@ -20,6 +20,11 @@ class ActivitiesController < ApplicationController
         activity.update(activity_params)
         render json: activity
     end
+    def destroy
+        activity = Activity.find(params[:id])
+        activity.delete
+        render json: activity
+    end
 
 
     private
