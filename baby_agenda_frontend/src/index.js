@@ -7,15 +7,21 @@ class Helper {
         .then (res =>res.json())
     }
 
-    static refresh(){
+    static  refreshAll(){
         document.getElementById(`activity-splash`).remove()
         document.getElementById(`activities-wrapper`).innerHTML = ""
+        new Nav()
         Activity.all()
+    }
+
+    static closeActivitySplash(){
+        document.getElementById(`activity-splash`).remove()
+
     }
 }
 
 
-class Activity {
+class Activity{
     constructor(activity){
         this.name = activity.name,
         this.id = activity.id,
@@ -25,12 +31,16 @@ class Activity {
     }
 
     static all(){
-        const allActivities = Helper.fetcher(ACTIVITIES_URL)
-        allActivities.then( activity => {
-            activity.forEach(activity => {
+        fetch(ACTIVITIES_URL)
+        .then (res => res.json())
+        .then( data => {
+           
+            data.forEach(activity => {
+              
                 return new Activity(activity)
             })
         })
+        .catch(err => console.log(err))
     }
 
     setShowButtonEvent(){
@@ -61,7 +71,7 @@ class Activity {
         this.setShowButtonEvent()
     }
     
-}
+} //end of activity
 
 class ActivityShow { 
     constructor(activity){
@@ -86,6 +96,7 @@ class ActivityShow {
     showEditEvent(){
         const showEditButton = document.getElementById(`show-edit-button`)
         showEditButton.addEventListener("click", (e) => {
+            Helper.closeActivitySplash()
             this.renderEditActivityForm()
 
         })
@@ -151,7 +162,7 @@ class ActivityShow {
     editCancelEvent(){
         const button = document.getElementById(`edit-cancel-button`)
         button.addEventListener("click", (e) => {
-            Helper.refresh()
+            Helper.refreshAll()
         })
     }
     editSubmitEvent(e){
@@ -178,7 +189,7 @@ class ActivityShow {
             body: JSON.stringify(data)
         })
         .then(resp => resp.json())
-        .then(Helper.refresh())
+        .then(() => {Helper.refreshAll()})
         .catch(err => console.log(err))
 
     }
@@ -196,7 +207,7 @@ class ActivityShow {
             body: JSON.stringify(data)
         })
         .then(resp => resp.json())
-        .then(Helper.refresh())
+        .then(data => {Helper.refreshAll()})
         .catch(err => console.log(err))
     
     }
@@ -266,17 +277,8 @@ class ActivityShow {
 
 
 class NewActivity {
-    constructor(){
-        
-        this.renderNewActivityButton()
-        this.newActivityButtonEvent()
-    }
-
-    newActivityButtonEvent(){
-        const showCloseButton = document.getElementById(`add-activity-button`)
-        showCloseButton.addEventListener("click", (e) => {
-            this.renderNewActivityForm()
-        })
+    constructor(){ 
+        this.renderNewActivityForm()
     }
 
     renderNewActivityForm(){
@@ -284,17 +286,22 @@ class NewActivity {
         const add_activity_node = document.createElement("div")
         add_activity_node.setAttribute(`id`,`activity-splash`)
         //title
-        const add_activity_title_node = document.createElement("h3")
-        const add_activity_title_node_text = document.createTextNode("Add a New Activity")
+        const add_activity_title_node = document.createElement("h2")
+        const add_activity_title_node_text = document.createTextNode("Add a New Quest")
         add_activity_title_node.appendChild(add_activity_title_node_text)
         //actual form
         const addActivityForm = document.createElement("div")
         addActivityForm.innerHTML = `
-            <form id="add-activity-form"> 
-            <label for="add_activity_name">Name:</label>
-            <input type="text" id="add_activity_name" placeholder="Enter a short name for the activity">
+            <form id="form-wrapper"> 
+            <div>
+            <label for="add_activity_name">Name:</label><br>
+            <input type="text" id="add_activity_name" placeholder="Enter a short name for the quest">
+            </div>
+            <div>
             <label for="add_activity_description">Description:</label>
-            <input type="text" id="add_activity_description" placeholder="Describe the activity">
+            <textarea id="add_activity_description" width="80%" placeholder="Describe the baby's quest"></textarea> 
+            </div>
+            <div>
             <label for="add_activity_age">Minimum Recommended Age:</label>
             <select name="add_activity_age" id="add_activity_age">
                 <option value="under6">Less than 6 Months</option>
@@ -302,19 +309,22 @@ class NewActivity {
                 <option value="12-24">12-24 Months</option>
                 <option value="over24">Over 24 Months</option>
             </select>
-            <label for="add_activity_time">how long does it take?</label>
+            </div>
+            <div>
+            <label for="add_activity_time">How long does it take?</label>
             <select name="add_activity_time" id="add_activity_time">
                 <option value="under10">Less than 10 Minutes</option>
                 <option value="10-30">10-30 Minutes</option>
                 <option value="30-60">30-60 Minutes</option>
                 <option value="over60">Over 60 Minutes</option>
             </select>
+            </div>
             <input type="submit" id="add-activity-submit">
             </form>
         `
         
         const add_activity_close_node = document.createElement("button")
-        add_activity_close_node.setAttribute(`id`,`add-cancel-button`)
+        add_activity_close_node.setAttribute(`id`,`form-cancel-button`)
         const add_activity_close_node_text = document.createTextNode("Cancel")
         add_activity_close_node.appendChild(add_activity_close_node_text)
 
@@ -329,22 +339,14 @@ class NewActivity {
         this.addSubmitEvent()
     }
 
-    renderNewActivityButton(){
-        const add_activity_node = document.createElement("button")
-        add_activity_node.setAttribute(`id`,`add-activity-button`)
-        const add_activity_node_text = document.createTextNode("New Activity")
-        add_activity_node.appendChild(add_activity_node_text)
-        document.querySelector("nav").appendChild(add_activity_node)
-    }
-
     addCancelEvent(){
-        const button = document.getElementById(`add-cancel-button`)
+        const button = document.getElementById(`form-cancel-button`)
         button.addEventListener("click", (e) => {
-            Helper.refresh()
+            Helper.refreshAll()
         })
     }
     addSubmitEvent(e){
-        const form = document.getElementById(`add-activity-form`)
+        const form = document.getElementById(`form-wrapper`)
         form.addEventListener("submit", (e) => {
             e.preventDefault()
             this.submitNewActivity(e)
@@ -357,7 +359,7 @@ class NewActivity {
             minimum_age:e.target[2].value,
             minimum_time_taken:e.target[3].value
         } 
-        fetch(ACTIVITIES_NEW_URL, {
+        fetch(ACTIVITIES_URL, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -366,14 +368,40 @@ class NewActivity {
             body: JSON.stringify(data)
         })
         .then(resp => resp.json())
-        .then(res => new Activity(res))
+        .then(res => {Helper.refreshAll()})
         .catch(err => console.log(err))
     }
 }
 
+class Nav {
+    constructor(){
+        this.nav = document.querySelector("#nav-wrapper")
+        this.nav.innerHTML = ""
+        this.renderNewActivityButton()
+    }
+    renderNewActivityButton(){
+        const add_activity_node = document.createElement("button")
+        add_activity_node.setAttribute(`id`,`add-activity-button`)
+        const add_activity_node_text = document.createTextNode("New Activity")
+        add_activity_node.appendChild(add_activity_node_text)
+        this.nav.appendChild(add_activity_node)
+        const newActivityButton = document.getElementById(`add-activity-button`)
+        newActivityButton.addEventListener("click", (e) => {
+            
+            return new NewActivity()
+        })
+    }
+
+        
+
+
+
+}
 
 //Things that run (maybe all in an init afterwards)
-new NewActivity()
+//Maybe 
+
+new Nav()
 Activity.all()
 
 
