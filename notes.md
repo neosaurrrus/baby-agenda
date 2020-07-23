@@ -6,9 +6,9 @@ Create - done
 Read - done
 
 Update - done
-- Populate form with existing values.
 
-Delete - NEXT
+
+Delete - Done
 
 # User Stuff
 
@@ -20,7 +20,7 @@ Delete - NEXT
 
 # Refactoring
 
-1. Revisit Class Structures
+1. Revisit Class Structures - Maybe Inferface class for stuff that is seen??
 2. Variable naming convention
 3. DRY up WET Code. 
 
