@@ -18,6 +18,14 @@ class Helper {
         document.getElementById(`activity-splash`).remove()
 
     }
+
+    static buildElement(target,element, attributeName, attributeValue, textValue){
+        const node = document.createElement(element)
+        node.setAttribute(attributeName,attributeValue)
+        const node_text = document.createTextNode(textValue)
+        node.appendChild(node_text)
+        target.appendChild(node)
+    }
 }
 
 
@@ -36,25 +44,15 @@ class Activity{
         .then( data => {
            
             data.forEach(activity => {
-              
-                return new Activity(activity)
+              return new Activity(activity)
             })
         })
         .catch(err => console.log(err))
     }
 
-    setShowButtonEvent(){
-        const detailsButton = document.getElementById(`show-button-${this.id}`)
-        detailsButton.addEventListener("click", (e) => {
-            const act =  Helper.fetcher(`http://localhost:3000/activities/${this.id}`)
-            act.then( a => {
-                new ActivityShow(a)
-            })
-        })
-    }
-
     render(){
         const activity_node = document.createElement("div")
+        activity_node.setAttribute('class', 'activity-card')
         const activity_name_node = document.createElement("h3")
         const activity_name_node_text = document.createTextNode(this.name)
         activity_name_node.appendChild(activity_name_node_text)
@@ -69,6 +67,16 @@ class Activity{
         activity_node.appendChild(activity_show_node)
         document.getElementById("activities-wrapper").appendChild(activity_node)
         this.setShowButtonEvent()
+    }
+
+    setShowButtonEvent(){
+        const detailsButton = document.getElementById(`show-button-${this.id}`)
+        detailsButton.addEventListener("click", (e) => {
+            const act =  Helper.fetcher(`http://localhost:3000/activities/${this.id}`)
+            act.then( a => {
+                new ActivityShow(a)
+            })
+        })
     }
     
 } //end of activity
@@ -90,7 +98,7 @@ class ActivityShow {
      showCloseEvent(){
         const showCloseButton = document.getElementById(`show-close-button`)
         showCloseButton.addEventListener("click", (e) => {
-            Helper.refresh()
+            Helper.refreshAll()
         })
     }
     showEditEvent(){
@@ -375,26 +383,44 @@ class NewActivity {
 
 class Nav {
     constructor(){
-        this.nav = document.querySelector("#nav-wrapper")
+        this.nav = document.querySelector("nav")
         this.nav.innerHTML = ""
         this.renderNewActivityButton()
+        this.renderLogoutButton()
+        this.renderLoginButton()
+        this.renderSignupButton()
     }
     renderNewActivityButton(){
-        const add_activity_node = document.createElement("button")
-        add_activity_node.setAttribute(`id`,`add-activity-button`)
-        const add_activity_node_text = document.createTextNode("New Activity")
-        add_activity_node.appendChild(add_activity_node_text)
-        this.nav.appendChild(add_activity_node)
+        Helper.buildElement(this.nav, "button", "id", "add-activity-button", "New Activity")
         const newActivityButton = document.getElementById(`add-activity-button`)
         newActivityButton.addEventListener("click", (e) => {
-            
             return new NewActivity()
         })
     }
+    renderLoginButton(){
+        Helper.buildElement(this.nav, "button", "id", "login-button", "Login")
+        const button = document.getElementById(`login-button`)
+        button.addEventListener("click", (e) => {
+            return new Login()
+        })
+    }
+    renderLogoutButton(){
+        Helper.buildElement(this.nav, "button", "id", "logout-button", "Logout")
+        const button = document.getElementById(`logout-button`)
+        button.addEventListener("click", (e) => {
+            return new Logout()
+        })
+    }
+    renderSignupButton(){
+        Helper.buildElement(this.nav, "button", "id", "signup-button", "Signup")
+        const button = document.getElementById(`signup-button`)
+        button.addEventListener("click", (e) => {
+            return new Signup()
+        })
+    }
+}
 
-        
-
-
+class Signup {
 
 }
 
