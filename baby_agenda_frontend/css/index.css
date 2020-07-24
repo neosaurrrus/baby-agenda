@@ -1,14 +1,44 @@
+html {
+    margin: 0 auto;
+}
 body {
-    background-color: slategray;
+    background-color: rgb(200,200,200);
     font-family: adobe-garamond-pro, serif;
     font-size: 20px;
     font-style: normal;
     font-weight: 400;
-    color: #333333;
-    margin:0;
-    padding:0;
+    color: #444444;
+    margin: 0 auto;
 }
 
+.logo{
+    font-size: 5.0rem;
+    font-weight: 400;
+}
+
+header {
+    margin: 0 auto;
+    padding:50px;
+    height: 250px;
+    background-color: rgba(20,20,20,0.6);
+    color: rgb(223,223,233);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+}
+
+main{
+    width: 80%;
+    margin: 0 auto;
+}
+
+#activity-wrapper{
+    display: flex;
+    width: 80%;
+    justify-content: space-between;
+}
 
 #activity-splash{
     color: rgba(223,223,223);
@@ -23,13 +53,17 @@ body {
 }
 
 
-nav {
-    padding: 0;
-    margin: 0 auto;
-    background-color: rgba(20,20,20,0.8);
-    color: rgb(223,223,233);
-    text-align: center;
+.activity-card{
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 30%;
+    background: pink;
+    margin: 25px;
 }
+
+
+
 
 form div {
    padding-top: 20px;
