@@ -1,4 +1,5 @@
 const ACTIVITIES_URL = "http://localhost:3000/activities"
+const USERS_URL = "http://localhost:3000/users"
 
 
 class Helper {
@@ -14,9 +15,14 @@ class Helper {
         Activity.all()
     }
 
+    static openActivitySplash(){
+        const node = document.createElement("div")
+        node.setAttribute(`id`,`activity-splash`)
+        document.getElementById("activities-wrapper").appendChild(node)
+        return node
+    }
     static closeActivitySplash(){
         document.getElementById(`activity-splash`).remove()
-
     }
 
     static buildElement(target,element, attributeName, attributeValue, textValue){
@@ -421,7 +427,64 @@ class Nav {
 }
 
 class Signup {
+    constructor(){
+        this.renderSignupForm()
+    }
 
+    renderSignupForm(){
+        //splash
+        const signupNode = Helper.openActivitySplash()
+        //title
+        Helper.buildElement(signupNode, "h2", "id", "form-heading", "Signup for full access")
+        //actual form
+        const form = document.createElement("div")
+        form.innerHTML = `
+            <form id="form-wrapper"> 
+            <div>
+                <label for="signup_name">Name:</label><br>
+                <input type="text" id="signup_name" placeholder="Provide a username">
+            </div>
+            <div>
+                <label for="signup_password">Password:</label><br>
+                <input type="password" id="signup_name">
+            </div>
+            <div>
+                <input type="submit" id="add-activity-submit">
+            </div>
+            </form>
+        `
+        signupNode.appendChild(form)
+        Helper.buildElement(signupNode, "button", "id", "form-cancel-button", "Cancel")
+        
+        this.submitSignup()
+        document.getElementById(`form-cancel-button`).addEventListener("click", (e) => {Helper.refreshAll()})
+
+        
+        
+    }
+
+    submitSignup(e){
+        const form = document.getElementById(`form-wrapper`)
+        form.addEventListener("submit", (e) => {
+            e.preventDefault()
+            const data = {
+                name:e.target[0].value, 
+                password:e.target[1].value
+            } 
+            fetch(USERS_URL, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+                body: JSON.stringify(data)
+            })
+            .then(resp => resp.json())
+            .then(res => {Helper.refreshAll()})
+            .catch(err => console.log(err))
+        })
+    }
+    
 }
 
 //Things that run (maybe all in an init afterwards)
