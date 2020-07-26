@@ -8,7 +8,16 @@ class UsersController < ApplicationController
 
     def create 
         user = User.create(user_params)
-        render json: user
+        if user.save
+            session[:user_id] = user.id
+        end
+        
+    end
+
+    def current_user
+        user = User.find_by(id:session[:user_id])
+        #why is this sending out guest all the time???
+        render json: {user: user || "guest"}
     end
 
 
