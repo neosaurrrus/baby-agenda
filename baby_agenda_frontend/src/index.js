@@ -395,6 +395,16 @@ class Nav {
         this.renderLogoutButton()
         this.renderLoginButton()
         this.renderSignupButton()
+        this.checkLogonStatus()
+    }
+
+    checkLogonStatus(){
+        //fetch session info 
+        let user = fetch(USERS_URL + "/current_user")
+        .then(resp => resp.json())
+        .then(res => console.log(res))
+
+        //console.log accordingly
     }
     renderNewActivityButton(){
         Helper.buildElement(this.nav, "button", "id", "add-activity-button", "New Activity")
@@ -450,7 +460,7 @@ class Signup {
             </div>
             <div>
                 <label for="baby_name">Baby Name:</label><br>
-                <input type="text" id="baby_name">
+                <input type="text" id="baby_name" placeholder= "Provide your Baby's name">
             </div>
             <div>
                 <label for="baby_dob">Baby DOB:</label><br>

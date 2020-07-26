@@ -15,6 +15,7 @@ class SessionsController < ApplicationController
         render json: "hi"
     end
 
+   
 
     private
 
