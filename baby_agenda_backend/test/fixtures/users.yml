@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  password: MyString
+  baby_name: MyString
+  baby_dob: 2020-07-25
+  baby_points: 1
+  agenda_id: 1
+
+two:
+  name: MyString
+  password: MyString
+  baby_name: MyString
+  baby_dob: 2020-07-25
+  baby_points: 1
+  agenda_id: 1

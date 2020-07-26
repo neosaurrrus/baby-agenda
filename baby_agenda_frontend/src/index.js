@@ -441,12 +441,20 @@ class Signup {
         form.innerHTML = `
             <form id="form-wrapper"> 
             <div>
-                <label for="signup_name">Name:</label><br>
-                <input type="text" id="signup_name" placeholder="Provide a username">
+                <label for="name">Name:</label><br>
+                <input type="text" id="name" placeholder="Provide a username">
             </div>
             <div>
-                <label for="signup_password">Password:</label><br>
-                <input type="password" id="signup_name">
+                <label for="password">Password:</label><br>
+                <input type="password" id="password">
+            </div>
+            <div>
+                <label for="baby_name">Baby Name:</label><br>
+                <input type="text" id="baby_name">
+            </div>
+            <div>
+                <label for="baby_dob">Baby DOB:</label><br>
+                <input type="date" id="baby_DOB">
             </div>
             <div>
                 <input type="submit" id="add-activity-submit">
@@ -458,9 +466,6 @@ class Signup {
         
         this.submitSignup()
         document.getElementById(`form-cancel-button`).addEventListener("click", (e) => {Helper.refreshAll()})
-
-        
-        
     }
 
     submitSignup(e){
