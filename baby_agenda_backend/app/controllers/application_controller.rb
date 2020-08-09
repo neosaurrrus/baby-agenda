@@ -1,24 +1,13 @@
-class ApplicationController < ActionController::Base
+class ApplicationController < ActionController::API
   
-before_action :set_user
-   
+before_action :authenticate_request
+attr_reader :current_user
     
-    def check_if_belongs_to_user(instance)
-        instance.user_id == current_user.id
-    end
 
-    def current_user
-        user = "none"
-        if session[:id].present?
-            user = User.find(session[:id]) 
-        end
-        user
-        
-    end
     private
 
-    def set_user
-        cookies[:username] = current_user || 'Guest'
-        puts cookies[:username]
+    def authenticate_request
+        @current_user = AuthorizeApiRequest.call(request.headers).result
+        render json: { error: 'Not Authorized' }, status: 401 unless @current_user
     end
 end
