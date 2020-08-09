@@ -25,7 +25,7 @@ ActiveRecord::Schema.define(version: 2020_07_25_211758) do
 
   create_table "users", force: :cascade do |t|
     t.string "name"
-    t.string "password"
+    t.string "password_digest"
     t.string "baby_name"
     t.date "baby_dob"
     t.integer "baby_points", default: 0
