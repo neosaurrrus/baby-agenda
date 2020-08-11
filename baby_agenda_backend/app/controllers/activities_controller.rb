@@ -1,5 +1,5 @@
 class ActivitiesController < ApplicationController
-    skip_before_action :verify_authenticity_token
+  
     def index
         activities = Activity.all
         render json: activities 
