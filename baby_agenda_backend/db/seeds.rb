@@ -6,5 +6,7 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-
-Activity.create([{ name: "Peekaboo", description: "Hiding your face and then showing it again",minimum_age: "6-12 months",minimum_time_taken: "Less than 10 minutes",upvotes: 10,downvotes: 4},{name: "Sing along to music", description: "Try picking a favourite album you like to hear",minimum_age: "0-6 months",minimum_time_taken: "Less than 10 minutes",upvotes: 1,downvotes: 4}])
+User.create([{name: "Alice", password: "alice", baby_name: "Ava", baby_dob: 20181111, agenda_id: 1}])
+User.create([{name: "Bob", password: "bob", baby_name: "Becky", baby_dob: 20191212, agenda_id: 1}])
+Activity.create({name: "Sing along to music" ,description: "Try picking a favourite album you like to hear",minimum_age: "0-6 months",minimum_time_taken: "Less than 10 minutes",upvotes: 1,downvotes: 4, user_id: 2})
+Activity.create({ name: "Peekaboo", description: "Hiding your face and then showing it again",minimum_age: "6-12 months",minimum_time_taken: "Less than 10 minutes",upvotes: 10,downvotes: 4, user_id: 1})

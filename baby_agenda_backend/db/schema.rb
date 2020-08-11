@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 2020_07_25_211758) do
     t.string "description"
     t.string "minimum_age"
     t.string "minimum_time_taken"
+    t.integer "user_id"
     t.integer "upvotes", default: 0
     t.integer "downvotes", default: 0
     t.datetime "created_at", precision: 6, null: false
