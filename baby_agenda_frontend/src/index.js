@@ -395,7 +395,7 @@ class Nav {
         this.renderLogoutButton()
         this.renderLoginButton()
         this.renderSignupButton()
-        this.checkLogonStatus()
+        // this.checkLogonStatus()
     }
 
     checkLogonStatus(){
@@ -440,7 +440,6 @@ class Signup {
     constructor(){
         this.renderSignupForm()
     }
-
     renderSignupForm(){
         //splash
         const signupNode = Helper.openActivitySplash()
@@ -495,12 +494,15 @@ class Signup {
                 body: JSON.stringify(data)
             })
             .then(resp => resp.json())
-            .then(res => {Helper.refreshAll()})
             .catch(err => console.log(err))
+            .then(res => {Helper.refreshAll()})
+            
         })
     }
     
 }
+
+
 
 //Things that run (maybe all in an init afterwards)
 //Maybe 
