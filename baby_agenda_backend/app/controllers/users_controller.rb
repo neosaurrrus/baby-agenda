@@ -9,27 +9,38 @@ class UsersController < ApplicationController
     # end
 
     def create 
-       
         user = User.create!(user_params)
-        binding.pry
         if user.save
+            session[:user_id] = user.id
             render json: user
         end
-        
-        render json: user
-        
 
     end
 
     def current_user
-        user = User.find_by(id:session[:user_id])
-        if user
-            render json: user
-        else
-        #why is this sending out guest all the time???
-        render json: user
-        end
-    end
+        session[:user_id] = 1
+        render json: {
+                    error: "No such user; check the submitted email address",
+                    status: 400
+                  }, status: 400
+                end
+     
+       
+        # if !session
+        #     render json: ({name => "Guest"})
+        # else
+        #     user = User.find(session[:user_id])
+        #     binding.pry
+        #     if user.present?
+        #         render json: user
+        #     else
+        #     render json: {
+        #         error: "No such user; check the submitted email address",
+        #         status: 400
+        #       }, status: 400
+        #     end
+        # end
+    # end
 
    
 
