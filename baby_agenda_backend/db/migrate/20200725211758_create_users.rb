@@ -7,7 +7,6 @@ class CreateUsers < ActiveRecord::Migration[6.0]
       t.date :baby_dob
       t.integer :baby_points, :default => 0
       t.integer :agenda_id
-
       t.timestamps
     end
   end
