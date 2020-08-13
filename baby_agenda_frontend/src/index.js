@@ -390,7 +390,9 @@ class NewActivity {
 class Nav {
     constructor(){
         this.nav = document.querySelector("nav")
+        this.session = document.querySelector("#session-status")
         this.nav.innerHTML = ""
+        this.session.innerHTML = ""
         this.checkSession()
         this.renderNewActivityButton()
         this.renderLogoutButton()
@@ -409,6 +411,13 @@ class Nav {
 
     renderSession(res){
         console.log(res)
+        if (res.error) {
+            Helper.buildElement(this.session, "div", "id", "session-text", res.error)    
+        } else {
+            const {name, baby_name} = res
+            Helper.buildElement(this.session, "div", "id", "session-text", `${name} with little baby ${baby_name}`)  
+        }
+        
     }
     renderNewActivityButton(){
         Helper.buildElement(this.nav, "button", "id", "add-activity-button", "New Activity")
@@ -510,6 +519,103 @@ class Signup {
         })
     }
     
+}
+
+class Login {
+    constructor(){ 
+        this.renderNewLoginForm()
+    }
+
+    renderNewLoginForm(){
+        //splash
+        const add_activity_node = document.createElement("div")
+        add_activity_node.setAttribute(`id`,`activity-splash`)
+        //title
+        const add_activity_title_node = document.createElement("h2")
+        const add_activity_title_node_text = document.createTextNode("Add a New Quest")
+        add_activity_title_node.appendChild(add_activity_title_node_text)
+        //actual form
+        const addActivityForm = document.createElement("div")
+        addActivityForm.innerHTML = `
+            <form id="form-wrapper"> 
+            <div>
+            <label for="add_activity_name">Name:</label><br>
+            <input type="text" id="add_activity_name" placeholder="Enter a short name for the quest">
+            </div>
+            <div>
+            <label for="add_activity_description">Description:</label>
+            <textarea id="add_activity_description" width="80%" placeholder="Describe the baby's quest"></textarea> 
+            </div>
+            <div>
+            <label for="add_activity_age">Minimum Recommended Age:</label>
+            <select name="add_activity_age" id="add_activity_age">
+                <option value="under6">Less than 6 Months</option>
+                <option value="6-12">6-12 Months</option>
+                <option value="12-24">12-24 Months</option>
+                <option value="over24">Over 24 Months</option>
+            </select>
+            </div>
+            <div>
+            <label for="add_activity_time">How long does it take?</label>
+            <select name="add_activity_time" id="add_activity_time">
+                <option value="under10">Less than 10 Minutes</option>
+                <option value="10-30">10-30 Minutes</option>
+                <option value="30-60">30-60 Minutes</option>
+                <option value="over60">Over 60 Minutes</option>
+            </select>
+            </div>
+            <input type="submit" id="add-activity-submit">
+            </form>
+        `
+        
+        const add_activity_close_node = document.createElement("button")
+        add_activity_close_node.setAttribute(`id`,`form-cancel-button`)
+        const add_activity_close_node_text = document.createTextNode("Cancel")
+        add_activity_close_node.appendChild(add_activity_close_node_text)
+
+
+        add_activity_node.appendChild(add_activity_title_node)
+        add_activity_node.appendChild(addActivityForm)
+        add_activity_node.appendChild(add_activity_close_node)
+        
+        
+        document.getElementById("activities-wrapper").appendChild(add_activity_node)
+        this.addCancelEvent()
+        this.addSubmitEvent()
+    }
+
+    addCancelEvent(){
+        const button = document.getElementById(`form-cancel-button`)
+        button.addEventListener("click", (e) => {
+            Helper.refreshAll()
+        })
+    }
+    addSubmitEvent(e){
+        const form = document.getElementById(`form-wrapper`)
+        form.addEventListener("submit", (e) => {
+            e.preventDefault()
+            this.submitNewActivity(e)
+        })
+    }
+    submitNewActivity(e){
+        const data = {
+            name:e.target[0].value, 
+            description:e.target[1].value,
+            minimum_age:e.target[2].value,
+            minimum_time_taken:e.target[3].value
+        } 
+        fetch(ACTIVITIES_URL, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(data)
+        })
+        .then(resp => resp.json())
+        .then(res => {Helper.refreshAll()})
+        .catch(err => console.log(err))
+    }
 }
 
 
