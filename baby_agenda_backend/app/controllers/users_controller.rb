@@ -9,10 +9,13 @@ class UsersController < ApplicationController
     # end
 
     def create 
-        user = User.create(user_params)
+       
+        user = User.create!(user_params)
+        binding.pry
         if user.save
             render json: user
         end
+        
         render json: user
         
 

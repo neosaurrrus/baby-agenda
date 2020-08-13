@@ -463,7 +463,7 @@ class Signup {
             </div>
             <div>
                 <label for="baby_dob">Baby DOB:</label><br>
-                <input type="date" id="baby_DOB">
+                <input type="date" id="baby_dob">
             </div>
             <div>
                 <input type="submit" id="add-activity-submit">
@@ -483,8 +483,11 @@ class Signup {
             e.preventDefault()
             const data = {
                 name:e.target[0].value, 
-                password:e.target[1].value
+                password:e.target[1].value,
+                baby_name:e.target[2].value,
+                baby_dob:e.target[3].value,
             } 
+      
             fetch(USERS_URL, {
                 method: 'POST',
                 headers: {
@@ -495,7 +498,10 @@ class Signup {
             })
             .then(resp => resp.json())
             .catch(err => console.log(err))
-            .then(res => {Helper.refreshAll()})
+            .then(res => {
+                console.log(res)
+                Helper.refreshAll()
+            })
             
         })
     }
