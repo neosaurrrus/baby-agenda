@@ -1,9 +1,11 @@
 Rails.application.routes.draw do
+  get 'sessions/new'
+  get 'sessions/create'
+  get 'sessions/destroy'
+  get 'users/current_user'
   root 'activities#index'
   resources :activities
   resources :users
-  
-  post "authenticate", to: "authentication#authenticate"
   
 
   

@@ -391,20 +391,24 @@ class Nav {
     constructor(){
         this.nav = document.querySelector("nav")
         this.nav.innerHTML = ""
+        this.checkSession()
         this.renderNewActivityButton()
         this.renderLogoutButton()
         this.renderLoginButton()
         this.renderSignupButton()
-        // this.checkLogonStatus()
     }
 
-    checkLogonStatus(){
+    checkSession(){
         //fetch session info 
-        let user = fetch(USERS_URL + "/current_user")
+        fetch(USERS_URL + "/current_user")
         .then(resp => resp.json())
-        .then(res => console.log(res))
-
+        .then(res => this.renderSession(res))
+        .catch(err => console.log(err))
         //console.log accordingly
+    }
+
+    renderSession(res){
+        console.log(res)
     }
     renderNewActivityButton(){
         Helper.buildElement(this.nav, "button", "id", "add-activity-button", "New Activity")
