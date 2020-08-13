@@ -18,29 +18,24 @@ class UsersController < ApplicationController
     end
 
     def current_user
-        session[:user_id] = 1
+    
+        
+        if !session[:user_id]
+            render json: {
+                error: "Session not found, proceeding as guest",
+                status: 200
+                }, status: 200
+        else
+            user = User.find(session[:user_id])
+            render json: user
+        end
+    rescue ActiveRecord::RecordNotFound
         render json: {
-                    error: "No such user; check the submitted email address",
-                    status: 400
-                  }, status: 400
-                end
-     
-       
-        # if !session
-        #     render json: ({name => "Guest"})
-        # else
-        #     user = User.find(session[:user_id])
-        #     binding.pry
-        #     if user.present?
-        #         render json: user
-        #     else
-        #     render json: {
-        #         error: "No such user; check the submitted email address",
-        #         status: 400
-        #       }, status: 400
-        #     end
-        # end
-    # end
+            error: "No user found, which is odd",
+            status: 404
+        }, status: 404
+
+    end
 
    
 
