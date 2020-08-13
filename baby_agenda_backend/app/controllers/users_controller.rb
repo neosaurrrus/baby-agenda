@@ -18,11 +18,11 @@ class UsersController < ApplicationController
     end
 
     def current_user
-    
+        # session[:user_id] = 1
         
         if !session[:user_id]
             render json: {
-                error: "Session not found, proceeding as guest",
+                error: "Guest User",
                 status: 200
                 }, status: 200
         else
