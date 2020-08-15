@@ -1,5 +1,9 @@
 const ACTIVITIES_URL = "http://localhost:3000/activities"
 const USERS_URL = "http://localhost:3000/users"
+const SESSIONS_URL = "http://localhost:3000/sessions"
+let session = {
+    name: "Guest"
+}
 
 
 class Helper {
@@ -8,8 +12,10 @@ class Helper {
         .then (res =>res.json())
     }
 
+
     static  refreshAll(){
-        document.getElementById(`activity-splash`).remove()
+        // document.getElementById(`activity-splash`).remove() 
+        document.getElementById(`login-splash`).remove()
         document.getElementById(`activities-wrapper`).innerHTML = ""
         new Nav()
         Activity.all()
@@ -393,31 +399,17 @@ class Nav {
         this.session = document.querySelector("#session-status")
         this.nav.innerHTML = ""
         this.session.innerHTML = ""
-        this.checkSession()
+        this.renderSession()
         this.renderNewActivityButton()
         this.renderLogoutButton()
         this.renderLoginButton()
         this.renderSignupButton()
     }
 
-    checkSession(){
-        //fetch session info 
-        fetch(USERS_URL + "/current_user")
-        .then(resp => resp.json())
-        .then(res => this.renderSession(res))
-        .catch(err => console.log(err))
-        //console.log accordingly
-    }
+    
 
-    renderSession(res){
-        console.log(res)
-        if (res.error) {
-            Helper.buildElement(this.session, "div", "id", "session-text", res.error)    
-        } else {
-            const {name, baby_name} = res
-            Helper.buildElement(this.session, "div", "id", "session-text", `${name} with little baby ${baby_name}`)  
-        }
-        
+    renderSession(){
+            Helper.buildElement(this.session, "div", "id", "session-text", `${session.name}`)  
     }
     renderNewActivityButton(){
         Helper.buildElement(this.nav, "button", "id", "add-activity-button", "New Activity")
@@ -501,7 +493,7 @@ class Signup {
                 baby_dob:e.target[3].value,
             } 
       
-            fetch(USERS_URL, {
+            fetch(SESSIONS_URL, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
@@ -513,6 +505,7 @@ class Signup {
             .catch(err => console.log(err))
             .then(res => {
                 console.log(res)
+                Login.updateSession(res)
                 Helper.refreshAll()
             })
             
@@ -522,6 +515,26 @@ class Signup {
 }
 
 class Login {
+  
+    static checkSession(){
+        //fetch session info 
+        fetch(SESSIONS_URL)
+        .then(resp => resp.json())
+        .then(res => {
+            console.log(res)
+            this.updateSession(res)}
+            )
+        .catch(err => console.log(err))
+        //console.log accordingly
+    }
+
+    static updateSession(user){
+        session.name = user.name
+        session.baby_name = user.baby_name
+        session.baby_dob = user.dob
+        console.log(session)
+    }
+
     constructor(){ 
         this.renderNewLoginForm()
     }
@@ -529,10 +542,10 @@ class Login {
     renderNewLoginForm(){
         //splash
         const add_activity_node = document.createElement("div")
-        add_activity_node.setAttribute(`id`,`activity-splash`)
+        add_activity_node.setAttribute(`id`,`login-splash`)
         //title
         const add_activity_title_node = document.createElement("h2")
-        const add_activity_title_node_text = document.createTextNode("Add a New Quest")
+        const add_activity_title_node_text = document.createTextNode("Log back in to continue your baby's adventure")
         add_activity_title_node.appendChild(add_activity_title_node_text)
         //actual form
         const addActivityForm = document.createElement("div")
@@ -540,29 +553,11 @@ class Login {
             <form id="form-wrapper"> 
             <div>
             <label for="add_activity_name">Name:</label><br>
-            <input type="text" id="add_activity_name" placeholder="Enter a short name for the quest">
+            <input type="text" id="add_activity_name" placeholder="Your username">
             </div>
             <div>
-            <label for="add_activity_description">Description:</label>
-            <textarea id="add_activity_description" width="80%" placeholder="Describe the baby's quest"></textarea> 
-            </div>
-            <div>
-            <label for="add_activity_age">Minimum Recommended Age:</label>
-            <select name="add_activity_age" id="add_activity_age">
-                <option value="under6">Less than 6 Months</option>
-                <option value="6-12">6-12 Months</option>
-                <option value="12-24">12-24 Months</option>
-                <option value="over24">Over 24 Months</option>
-            </select>
-            </div>
-            <div>
-            <label for="add_activity_time">How long does it take?</label>
-            <select name="add_activity_time" id="add_activity_time">
-                <option value="under10">Less than 10 Minutes</option>
-                <option value="10-30">10-30 Minutes</option>
-                <option value="30-60">30-60 Minutes</option>
-                <option value="over60">Over 60 Minutes</option>
-            </select>
+            <label for="add_activity_description">Password:</label>
+            <input type="password" id="add_activity_password" placeholder="Your previous password">
             </div>
             <input type="submit" id="add-activity-submit">
             </form>
@@ -580,31 +575,30 @@ class Login {
         
         
         document.getElementById("activities-wrapper").appendChild(add_activity_node)
-        this.addCancelEvent()
-        this.addSubmitEvent()
+        this.loginCancelEvent()
+        this.loginSubmitEvent()
     }
 
-    addCancelEvent(){
+    loginCancelEvent(){
         const button = document.getElementById(`form-cancel-button`)
         button.addEventListener("click", (e) => {
             Helper.refreshAll()
         })
     }
-    addSubmitEvent(e){
+    loginSubmitEvent(e){
         const form = document.getElementById(`form-wrapper`)
         form.addEventListener("submit", (e) => {
             e.preventDefault()
-            this.submitNewActivity(e)
+            this.submitLogin(e)
         })
     }
-    submitNewActivity(e){
+    submitLogin(e){
         const data = {
             name:e.target[0].value, 
-            description:e.target[1].value,
-            minimum_age:e.target[2].value,
-            minimum_time_taken:e.target[3].value
+            password:e.target[1].value,
+    
         } 
-        fetch(ACTIVITIES_URL, {
+        fetch(SESSIONS_URL, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -613,9 +607,19 @@ class Login {
             body: JSON.stringify(data)
         })
         .then(resp => resp.json())
-        .then(res => {Helper.refreshAll()})
+        .then(res => {
+            // error handle failed login
+            Login.updateSession(res)
+            Helper.refreshAll()})
         .catch(err => console.log(err))
     }
+}
+
+class Logout{
+    constructor(){
+        Login.checkSession()
+    }
+
 }
 
 
@@ -625,6 +629,7 @@ class Login {
 
 new Nav()
 Activity.all()
+
 
 
 //something to build agenda
