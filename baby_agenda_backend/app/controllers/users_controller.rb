@@ -17,25 +17,7 @@ class UsersController < ApplicationController
 
     end
 
-    def current_user
-        # session[:user_id] = 1
-        
-        if !session[:user_id]
-            render json: {
-                error: "Guest User",
-                status: 200
-                }, status: 200
-        else
-            user = User.find(session[:user_id])
-            render json: user
-        end
-    rescue ActiveRecord::RecordNotFound
-        render json: {
-            error: "No user found, which is odd",
-            status: 404
-        }, status: 404
-
-    end
+    
 
    
 
