@@ -1,11 +1,11 @@
 Rails.application.routes.draw do
   get 'sessions/new'
   get 'sessions/create'
-  get 'sessions/destroy'
-  get 'users/current_user'
+  get 'sessions/destroy' 
   root 'activities#index'
   resources :activities
   resources :users
+  resources :sessions
   
 
   

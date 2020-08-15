@@ -51,6 +51,17 @@ main{
     top:20%;
     padding: 30px;
 }
+#login-splash{
+    color: rgba(223,223,223);
+    background: rgba(20,20,20,0.8);
+    margin: 0 auto;
+    width: 40%;
+    z-index:100;
+    position: absolute;
+  
+    top:20%;
+    padding: 30px;
+}
 
 
 .activity-card{
