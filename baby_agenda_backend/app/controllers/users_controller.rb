@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
     
-
     # def show
     #     user = User.find(params[:id])
     #     if user 
@@ -11,16 +10,11 @@ class UsersController < ApplicationController
     def create 
         user = User.create!(user_params)
         if user.save
+            Agenda.create!(user_id: user.id)
             session[:user_id] = user.id
             render json: user
         end
-
     end
-
-    
-
-   
-
 
 
     private
