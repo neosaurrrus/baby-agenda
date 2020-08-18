@@ -12,11 +12,12 @@ class Helper {
         .then (res =>res.json())
     }
 
-
     static  refreshAll(){
-        // document.getElementById(`activity-splash`).remove() 
-        document.getElementById(`login-splash`).remove()
         document.getElementById(`activities-wrapper`).innerHTML = ""
+        const activitySplash = document.getElementById(`activity-splash`)
+        if (activitySplash) {activitySplash.remove() }
+        const loginSplash = document.getElementById(`login-splash`)
+        if (loginSplash) {loginSplash.remove()}
         new Nav()
         Activity.all()
     }
@@ -51,10 +52,10 @@ class Activity{
     }
 
     static all(){
+        document.getElementById(`activities-wrapper`).innerHTML = ""
         fetch(ACTIVITIES_URL)
         .then (res => res.json())
         .then( data => {
-           
             data.forEach(activity => {
               return new Activity(activity)
             })
@@ -63,6 +64,7 @@ class Activity{
     }
 
     render(){
+     
         const activity_node = document.createElement("div")
         activity_node.setAttribute('class', 'activity-card')
         const activity_name_node = document.createElement("h3")
@@ -522,18 +524,27 @@ class Login {
         .then(resp => resp.json())
         .then(res => {
             console.log(res)
-            this.updateSession(res)}
-            )
+            this.updateSession(res)
+            Helper.refreshAll()
+    })
         .catch(err => console.log(err))
         //console.log accordingly
     }
 
     static updateSession(user){
-        session.name = user.name
-        session.baby_name = user.baby_name
-        session.baby_dob = user.dob
-        console.log(session)
+        if (user.error) {this.resetSession()}
+        else {
+            session.name = user.name
+            session.baby_name = user.baby_name
+            session.baby_dob = user.dob
+            console.log(session)    
+        }
     }
+    static resetSession(){
+        session.name = "Guest"
+        session.baby_name = null
+        session.baby_dob =  null
+        }
 
     constructor(){ 
         this.renderNewLoginForm()
@@ -618,6 +629,7 @@ class Login {
 class Logout{
     constructor(){
         Login.checkSession()
+       
     }
 
 }
