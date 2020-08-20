@@ -123,6 +123,14 @@ class ActivityShow {
 
         })
     }
+    addAgendaEvent(){
+        const addAgendaButton = document.getElementById(`add-agenda-button`)
+        addAgendaButton.addEventListener("click", (e) => {
+            Helper.closeActivitySplash()
+            this.addToAgenda(e)
+
+        })
+    }
     showDeleteEvent(){
         const showDeleteButton = document.getElementById(`show-delete-button`)
         showDeleteButton.addEventListener("click", (e) => {
@@ -193,6 +201,9 @@ class ActivityShow {
             e.preventDefault()
             this.submitEditActivity(e)
         })
+    }
+    addToAgenda(e){
+        console.log(e)
     }
     submitEditActivity(e){
         const data = {
@@ -279,6 +290,12 @@ class ActivityShow {
         const activity_delete_node_text = document.createTextNode("delete")
         activity_delete_node.appendChild(activity_delete_node_text)
         activity_node.appendChild(activity_delete_node)
+        //add_to_agenda
+        const activity_agenda_node = document.createElement("button")
+        activity_agenda_node.setAttribute(`id`,`add-agenda-button`)
+        const activity_agenda_node_text = document.createTextNode("agenda")
+        activity_agenda_node.appendChild(activity_agenda_node_text)
+        activity_node.appendChild(activity_agenda_node)
 
 
 
@@ -292,6 +309,7 @@ class ActivityShow {
         this.showCloseEvent()
         this.showEditEvent()
         this.showDeleteEvent()
+        this.addAgendaEvent()
     
     }
 
