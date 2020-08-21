@@ -203,7 +203,7 @@ class ActivityShow {
         })
     }
     addToAgenda(e){
-        console.log(e)
+        console.log(e.target)
     }
     submitEditActivity(e){
         const data = {
