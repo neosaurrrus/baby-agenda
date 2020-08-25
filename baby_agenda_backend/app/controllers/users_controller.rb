@@ -1,11 +1,12 @@
 class UsersController < ApplicationController
     
-    # def show
-    #     user = User.find(params[:id])
-    #     if user 
-    #         render json: user
-    #     end
-    # end
+    def show
+        user = User.find(params[:id])
+        agenda = user.agenda_activities
+        if user 
+            render json: agenda
+        end
+    end
 
     def create 
         user = User.create!(user_params)
