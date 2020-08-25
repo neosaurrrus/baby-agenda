@@ -11,7 +11,7 @@ class ActivitiesController < ApplicationController
     end
 
     def create 
-        activity = Activity.create(activity_params)
+        activity = Activity.create!(activity_params)
         render json: activity
     end
 
