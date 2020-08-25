@@ -341,6 +341,7 @@ class NewActivity {
                 <option value="over60">Over 60 Minutes</option>
             </select>
             </div>
+            <input type="hidden" id="user_id" value="1">
             <input type="submit" id="add-activity-submit">
             </form>
         `
@@ -379,7 +380,8 @@ class NewActivity {
             name:e.target[0].value, 
             description:e.target[1].value,
             minimum_age:e.target[2].value,
-            minimum_time_taken:e.target[3].value
+            minimum_time_taken:e.target[3].value,
+            user_id:e.target[4].value
         } 
         fetch(ACTIVITIES_URL, {
             method: 'POST',
@@ -472,6 +474,8 @@ class Signup {
                 <label for="baby_dob">Baby DOB:</label><br>
                 <input type="date" id="baby_dob">
             </div>
+           
+                
             <div>
                 <input type="submit" id="add-activity-submit">
             </div>
