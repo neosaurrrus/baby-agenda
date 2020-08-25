@@ -1,4 +1,4 @@
 class Activity < ApplicationRecord
     belongs_to :user
-    belongs_to :agenda
+    has_many :agenda_users, :class_name => :User
 end

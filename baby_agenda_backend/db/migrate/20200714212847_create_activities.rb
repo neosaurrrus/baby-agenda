@@ -8,7 +8,7 @@ class CreateActivities < ActiveRecord::Migration[6.0]
       t.integer :user_id
       t.integer :upvotes, :default => 0
       t.integer :downvotes, :default => 0
-
+      t.integer :agenda_activity_id, foreign_key: true
       t.timestamps
     end
   end
