@@ -2,7 +2,8 @@ const ACTIVITIES_URL = "http://localhost:3000/activities"
 const USERS_URL = "http://localhost:3000/users"
 const SESSIONS_URL = "http://localhost:3000/sessions"
 let session = {
-    name: "Guest"
+    name: "Guest",
+    id: null
 }
 
 
@@ -12,7 +13,7 @@ class Helper {
         .then (res =>res.json())
     }
 
-    static  refreshAll(){
+    static refreshAll(){
         document.getElementById(`activities-wrapper`).innerHTML = ""
         const activitySplash = document.getElementById(`activity-splash`)
         if (activitySplash) {activitySplash.remove() }
@@ -20,6 +21,10 @@ class Helper {
         if (loginSplash) {loginSplash.remove()}
         new Nav()
         Activity.all()
+    }
+    static refreshAgenda(){
+        document.getElementById(`agenda-wrapper`).innerHTML = ""
+        Agenda.all()
     }
 
     static openActivitySplash(){
@@ -38,6 +43,9 @@ class Helper {
         const node_text = document.createTextNode(textValue)
         node.appendChild(node_text)
         target.appendChild(node)
+    }
+    static currentUser(){
+        return session.id
     }
 }
 
@@ -123,6 +131,16 @@ class ActivityShow {
 
         })
     }
+
+    showAgendaEvent(){
+        const showAgendaButton = document.getElementById(`show-agenda-button`)
+        showAgendaButton.addEventListener("click", (e) => {
+            Helper.closeActivitySplash()
+            Agenda.add(this)
+        })
+    }
+
+
     showDeleteEvent(){
         const showDeleteButton = document.getElementById(`show-delete-button`)
         showDeleteButton.addEventListener("click", (e) => {
@@ -267,18 +285,25 @@ class ActivityShow {
         activity_downvotes_node.appendChild(activity_downvotes_node_text)
         activity_node.appendChild(activity_downvotes_node)
         
-        //edit button
-        const activity_edit_node = document.createElement("button")
-        activity_edit_node.setAttribute(`id`,`show-edit-button`)
-        const activity_edit_node_text = document.createTextNode("Edit")
-        activity_edit_node.appendChild(activity_edit_node_text)
-        activity_node.appendChild(activity_edit_node)
-        //delete
-        const activity_delete_node = document.createElement("button")
-        activity_delete_node.setAttribute(`id`,`show-delete-button`)
-        const activity_delete_node_text = document.createTextNode("delete")
-        activity_delete_node.appendChild(activity_delete_node_text)
-        activity_node.appendChild(activity_delete_node)
+        //logged in buttons
+        if (Helper.currentUser()){
+            const activity_edit_node = document.createElement("button")
+            activity_edit_node.setAttribute(`id`,`show-edit-button`)
+            const activity_edit_node_text = document.createTextNode("Edit")
+            activity_edit_node.appendChild(activity_edit_node_text)
+            activity_node.appendChild(activity_edit_node)
+            //delete
+            const activity_delete_node = document.createElement("button")
+            activity_delete_node.setAttribute(`id`,`show-delete-button`)
+            const activity_delete_node_text = document.createTextNode("delete")
+            activity_delete_node.appendChild(activity_delete_node_text)
+            activity_node.appendChild(activity_delete_node)
+            //Add to agenda.
+            
+            Helper.buildElement(activity_node, "button", "id", "show-agenda-button", "Add to Agenda")
+          
+        }
+        
 
 
 
@@ -292,6 +317,8 @@ class ActivityShow {
         this.showCloseEvent()
         this.showEditEvent()
         this.showDeleteEvent()
+        this.showAgendaEvent()
+      
     
     }
 
@@ -403,11 +430,17 @@ class Nav {
         this.session = document.querySelector("#session-status")
         this.nav.innerHTML = ""
         this.session.innerHTML = ""
-        this.renderSession()
-        this.renderNewActivityButton()
-        this.renderLogoutButton()
-        this.renderLoginButton()
-        this.renderSignupButton()
+        if (Helper.currentUser()){
+            this.renderSession()
+            this.renderNewActivityButton()
+            this.renderLogoutButton()
+        } else {
+            this.renderLoginButton()
+            this.renderSignupButton()
+        }
+        
+
+       
     }
 
     
@@ -521,18 +554,9 @@ class Signup {
 }
 
 class Login {
-  
     static checkSession(){
         //fetch session info 
-        fetch(SESSIONS_URL)
-        .then(resp => resp.json())
-        .then(res => {
-            console.log(res)
-            this.updateSession(res)
-            Helper.refreshAll()
-    })
-        .catch(err => console.log(err))
-        //console.log accordingly
+        return session
     }
 
     static updateSession(user){
@@ -541,14 +565,11 @@ class Login {
             session.name = user.name
             session.baby_name = user.baby_name
             session.baby_dob = user.dob
+            session.id = user.id
             console.log(session)    
         }
     }
-    static resetSession(){
-        session.name = "Guest"
-        session.baby_name = null
-        session.baby_dob =  null
-        }
+   
 
     constructor(){ 
         this.renderNewLoginForm()
@@ -632,22 +653,72 @@ class Login {
 
 class Logout{
     constructor(){
-        Login.checkSession()
+        Logout.resetSession()
        
     }
 
+    static resetSession(){
+        session.name = "Guest"
+        session.baby_name = null
+        session.baby_dob =  null
+        session.id =  null
+        Helper.refreshAll()
+        }
+}
+
+class Agenda{ //handles fetching, management and display of a User's Agenda Items
+    constructor(activity){
+        buildAgenda()
+        //add new agenda to agenda area with subsequent mouseover for show and buttons
+    }
+
+    //all method - to show all agenda Items
+
+    buildAgenda(){
+        document.getElementById(`agenda-wrapper`).innerHTML = ""
+        fetch(AGENDA_URL) //DOESNT EXIST
+        .then (res => res.json())
+        .then( data => {
+            data.forEach(agenda => {
+              return new AgendaItem
+            })
+        })
+        .catch(err => console.log(err))
+    }
+
+
+    //addAgendaItem method - Add Agenda Item to Agenda
+
+    static add(activity){
+                const data = {
+                    id: activity.id 
+                } 
+          
+                fetch(AGENDA_URL, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(resp => resp.json())
+                .catch(err => console.log(err))
+                .then(res => {
+                    console.log(res)
+                    Helper.refreshAgenda()
+                })
+                
+    }
+    
 }
 
 
+//Actual stull the app runs
 
-//Things that run (maybe all in an init afterwards)
-//Maybe 
 
 new Nav()
 Activity.all()
 
-
-
-//something to build agenda
 
 
