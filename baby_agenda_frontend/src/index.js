@@ -1,6 +1,7 @@
 const ACTIVITIES_URL = "http://localhost:3000/activities"
 const USERS_URL = "http://localhost:3000/users"
 const SESSIONS_URL = "http://localhost:3000/sessions"
+const AGENDA_URL = "http://localhost:3000/agendas"
 let session = {
     name: "Guest",
     id: null
@@ -20,11 +21,12 @@ class Helper {
         const loginSplash = document.getElementById(`login-splash`)
         if (loginSplash) {loginSplash.remove()}
         new Nav()
+        new Agenda()
         Activity.all()
     }
     static refreshAgenda(){
         document.getElementById(`agenda-wrapper`).innerHTML = ""
-        Agenda.all()
+        new Agenda()
     }
 
     static openActivitySplash(){
@@ -653,34 +655,36 @@ class Login {
 
 class Logout{
     constructor(){
-        Logout.resetSession()
-       
+        this.resetSession()
     }
-
-    static resetSession(){
+    resetSession(){
         session.name = "Guest"
         session.baby_name = null
         session.baby_dob =  null
         session.id =  null
         Helper.refreshAll()
-        }
+    }
 }
 
 class Agenda{ //handles fetching, management and display of a User's Agenda Items
     constructor(activity){
-        buildAgenda()
+        if (Helper.currentUser()){
+            this.buildAgenda()
+        }
+        
         //add new agenda to agenda area with subsequent mouseover for show and buttons
     }
 
     //all method - to show all agenda Items
 
     buildAgenda(){
-        document.getElementById(`agenda-wrapper`).innerHTML = ""
-        fetch(AGENDA_URL) //DOESNT EXIST
+        document.getElementById(`agenda-wrapper`).innerHTML = `<h3>${session.baby_name}'s Quests`
+        fetch(AGENDA_URL)
         .then (res => res.json())
         .then( data => {
-            data.forEach(agenda => {
-              return new AgendaItem
+            console.log("data is...")
+            data.forEach( el => {
+                return new AgendaItem(el)
             })
         })
         .catch(err => console.log(err))
@@ -705,8 +709,9 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
                 .then(resp => resp.json())
                 .catch(err => console.log(err))
                 .then(res => {
-                    console.log(res)
+
                     Helper.refreshAgenda()
+                   
                 })
                 
     }
@@ -715,10 +720,32 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
 
 
 //Actual stull the app runs
+class AgendaItem {
+    constructor(data){
+
+        const {name, description, minimum_age, minimum_time_taken, id} = data
+        this.render()
+    }
+    render(){
+
+        const agenda_node = document.createElement("div")
+        agenda_node.setAttribute('class', 'agenda-card')
+        Helper.buildElement(agenda_node, "h3", "class", "agenda-title", `${name}`)
+       
+        Helper.buildElement(agenda_node, "button", "class", "upvote", `Upvote`)
+        Helper.buildElement(agenda_node, "button", "class", "downvote", `Downvote`)
+        Helper.buildElement(agenda_node, "button", "class", "agenda_details", `Details`)
 
 
-new Nav()
-Activity.all()
+
+        document.getElementById("agenda-wrapper").appendChild(agenda_node)
+       
+    }
+}
+
+
+Helper.refreshAll()
+
 
 
 

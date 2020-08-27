@@ -72,6 +72,14 @@ main{
     background: pink;
     margin: 25px;
 }
+.agenda-card{
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 30%;
+    background: rgb(53, 95, 64);
+    margin: 25px;
+}
 
 
 
