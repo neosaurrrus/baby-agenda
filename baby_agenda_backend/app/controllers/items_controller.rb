@@ -1,9 +1,9 @@
-class AgendasController < ApplicationController
+class ItemsController < ApplicationController
 
     def index
         user = User.first
-        agenda = user.agenda_activities
-        render json: agenda
+        agenda = user.items
+        render json: 
     end
 
     def show
