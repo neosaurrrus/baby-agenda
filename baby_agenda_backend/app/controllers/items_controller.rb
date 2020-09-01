@@ -16,11 +16,13 @@ class ItemsController < ApplicationController
     end
 
     def destroy
-        user = User.first
-        agenda = user.agenda_activities
-        agenda = user.agenda_activities.find_by(agenda_activity_id:params[:id])
-        agenda.delete(agenda_item)
-        render json: agenda
+        user  = User.find(params[:user_id])
+        item = user.items.find(params[:id])
+        item.delete
+        render json: {
+            message: "Sucessfully removed from agenda",
+            status: 200
+        }, status: 200
     end
 
     private
