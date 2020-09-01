@@ -2,7 +2,9 @@ class UsersController < ApplicationController
     
     def show
         user = User.find(params[:id])
-        agenda = user.agenda_activities
+
+        agenda = user.items
+    
         if user 
             render json: agenda
         end
