@@ -1,7 +1,7 @@
 const ACTIVITIES_URL = "http://localhost:3000/activities"
 const USERS_URL = "http://localhost:3000/users"
 const SESSIONS_URL = "http://localhost:3000/sessions"
-const AGENDA_URL = "http://localhost:3000/agendas"
+const AGENDA_URL = "http://localhost:3000/items"
 let session = {
     name: "Guest",
     id: null
@@ -21,7 +21,7 @@ class Helper {
         const loginSplash = document.getElementById(`login-splash`)
         if (loginSplash) {loginSplash.remove()}
         new Nav()
-        new Agenda()
+        
         Activity.all()
     }
     static refreshAgenda(){
@@ -135,9 +135,11 @@ class ActivityShow {
     }
 
     showAgendaEvent(){
+        
         const showAgendaButton = document.getElementById(`show-agenda-button`)
         showAgendaButton.addEventListener("click", (e) => {
             Helper.closeActivitySplash()
+            console.log(this)
             Agenda.add(this)
         })
     }
@@ -567,8 +569,7 @@ class Login {
             session.name = user.name
             session.baby_name = user.baby_name
             session.baby_dob = user.dob
-            session.id = user.id
-            console.log(session)    
+            session.id = user.id  
         }
     }
    
@@ -648,7 +649,9 @@ class Login {
         .then(res => {
             // error handle failed login
             Login.updateSession(res)
-            Helper.refreshAll()})
+            Helper.refreshAll()
+            Helper.refreshAgenda()
+        })
         .catch(err => console.log(err))
     }
 }
@@ -679,25 +682,36 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
 
     buildAgenda(){
         document.getElementById(`agenda-wrapper`).innerHTML = `<h3>${session.baby_name}'s Quests`
-        fetch(AGENDA_URL)
-        .then (res => res.json())
-        .then( data => {
-            console.log("data is...")
-            data.forEach( el => {
-                return new AgendaItem(el)
-            })
-        })
+
+        fetch(USERS_URL+"/"+session.id)
+        .then(resp => resp.json())
         .catch(err => console.log(err))
+        .then(res => {
+            console.log(res)
+           res.forEach(item =>{
+               console.log(item.name+item.upvotes)
+               return new AgendaItem(item)
+           })
+        }) 
+
     }
 
 
     //addAgendaItem method - Add Agenda Item to Agenda
 
     static add(activity){
+            console.log(activity)
                 const data = {
-                    id: activity.id 
+                    activity_id: activity.id,
+                    user_id: session.id,
+                    name: activity.name,
+                    description: activity.description,
+                    minimum_age: activity.minimum_age,
+                    minimum_time_taken: activity.minimum_time_taken,
+                    upvotes: activity.upvotes,
+                    downvotes: activity.downvotes,
                 } 
-          
+         
                 fetch(AGENDA_URL, {
                     method: 'POST',
                     headers: {
@@ -709,11 +723,8 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
                 .then(resp => resp.json())
                 .catch(err => console.log(err))
                 .then(res => {
-
-                    Helper.refreshAgenda()
-                   
-                })
-                
+                    new Agenda
+                }) 
     }
     
 }
@@ -721,26 +732,76 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
 
 //Actual stull the app runs
 class AgendaItem {
-    constructor(data){
-
-        const {name, description, minimum_age, minimum_time_taken, id} = data
+    constructor(item){
+        this.name = item.name,
+        this.id = item.id,
+        this.activity_id = item.activity_id
+        this.description = item.description,
+        this.minimum_age = item.minimum_age,
+        this.minimum_time_taken = item.minimum_time_taken,
+        this.upvotes = item.upvotes,
+        this.downvotes = item.downvotes
         this.render()
+        this.upvoteEvent()
+        this.downvoteEvent()
+    
     }
-    render(){
 
+    render(){
         const agenda_node = document.createElement("div")
         agenda_node.setAttribute('class', 'agenda-card')
-        Helper.buildElement(agenda_node, "h3", "class", "agenda-title", `${name}`)
+        Helper.buildElement(agenda_node, "h3", "class", "agenda-title", `${this.name}`)
        
-        Helper.buildElement(agenda_node, "button", "class", "upvote", `Upvote`)
-        Helper.buildElement(agenda_node, "button", "class", "downvote", `Downvote`)
-        Helper.buildElement(agenda_node, "button", "class", "agenda_details", `Details`)
-
-
-
+        Helper.buildElement(agenda_node, "button", "id", `${this.id}u`, `Upvote`)
+        Helper.buildElement(agenda_node, "button", "id",`${this.id}d`, `Downvote`)
+        Helper.buildElement(agenda_node, "button", "id", "agenda_details", `Details`)
+        
         document.getElementById("agenda-wrapper").appendChild(agenda_node)
-       
     }
+
+    upvoteEvent(){
+        const button = document.getElementById(this.id+"u")
+    
+        button.addEventListener("click", (e) => {
+            this.upvoteSubmit()
+        })
+    }
+    upvoteSubmit(){
+        const newUpvoteCount = this.upvotes++
+        console.log(newUpvoteCount)
+        //get name of item (easy)
+        //fetch put request to update an activity with an upvote
+        const data = {
+            upvotes: newUpvoteCount,
+            id: this.activity_id
+        } 
+        console.log(data)
+        //NEED the ACTIIVITY ID with EACH AG~ENDA TO MAKE THIS EASY!
+        fetch(ACTIVITIES_URL+`/${this.activity_id}`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+
+            body: JSON.stringify(data)
+        })
+        .then(resp => resp.json())
+        .then((res) => {
+            console.log(res)
+            Helper.refreshAll()}
+            )
+        .catch(err => console.log(err))
+        //delete item from agenda
+
+    }
+
+    
+
+    downvoteEvent(){
+
+    }
+
 }
 
 
