@@ -11,14 +11,17 @@ class ActivitiesController < ApplicationController
     end
 
     def create 
-        binding.pry
+        
         activity = Activity.create!(activity_params)
         render json: activity
     end
 
     def update
+       
         activity = Activity.find(params[:id])
+        
         activity.update(activity_params)
+        binding.pry
         render json: activity
     end
     def destroy
@@ -31,6 +34,6 @@ class ActivitiesController < ApplicationController
     private
 
     def activity_params
-        params.require(:activity).permit(:id, :name, :description, :minimum_age, :minimum_time_taken, :user_id)
+        params.require(:activity).permit(:id, :name, :description, :minimum_age, :minimum_time_taken, :user_id, :upvotes, :downvotes)
     end
 end
