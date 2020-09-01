@@ -767,16 +767,16 @@ class AgendaItem {
         })
     }
     upvoteSubmit(){
-        const newUpvoteCount = this.upvotes++
+        const newUpvoteCount = this.upvotes+ 1
         console.log(newUpvoteCount)
         //get name of item (easy)
         //fetch put request to update an activity with an upvote
         const data = {
             upvotes: newUpvoteCount,
-            id: this.activity_id
+            id: this.activity_id,
+            user_id: session.id
         } 
-        console.log(data)
-        //NEED the ACTIIVITY ID with EACH AG~ENDA TO MAKE THIS EASY!
+     
         fetch(ACTIVITIES_URL+`/${this.activity_id}`, {
             method: 'PUT',
             headers: {
@@ -788,12 +788,24 @@ class AgendaItem {
         })
         .then(resp => resp.json())
         .then((res) => {
-            console.log(res)
-            Helper.refreshAll()}
+            console.log("Upvote Given!")}
             )
         .catch(err => console.log(err))
-        //delete item from agenda
 
+        fetch(AGENDA_URL+`/${this.id}`, {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(data)
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            console.log(data.message)
+            new Agenda
+            Helper.refreshAll()})
+        .catch(err => console.log(err))
     }
 
     
