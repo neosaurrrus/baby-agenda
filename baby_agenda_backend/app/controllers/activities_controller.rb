@@ -19,9 +19,8 @@ class ActivitiesController < ApplicationController
     def update
        
         activity = Activity.find(params[:id])
-        
         activity.update(activity_params)
-        binding.pry
+      
         render json: activity
     end
     def destroy
