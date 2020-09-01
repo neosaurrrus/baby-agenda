@@ -761,7 +761,6 @@ class AgendaItem {
 
     upvoteEvent(){
         const button = document.getElementById(this.id+"u")
-    
         button.addEventListener("click", (e) => {
             this.upvoteSubmit()
         })
@@ -811,7 +810,51 @@ class AgendaItem {
     
 
     downvoteEvent(){
+            const button = document.getElementById(this.id+"d")
+            button.addEventListener("click", (e) => {
+                this.downvoteSubmit()
+            })
+    }
 
+
+    downvoteSubmit(){
+        const count = this.downvotes+ 1
+        console.log(count)
+        const data = {
+            downvotes: count,
+            id: this.activity_id,
+            user_id: session.id
+        } 
+     
+        fetch(ACTIVITIES_URL+`/${this.activity_id}`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+
+            body: JSON.stringify(data)
+        })
+        .then(resp => resp.json())
+        .then((res) => {
+            console.log("vote Given!")}
+            )
+        .catch(err => console.log(err))
+
+        fetch(AGENDA_URL+`/${this.id}`, {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(data)
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            console.log(data.message)
+            new Agenda
+            Helper.refreshAll()})
+        .catch(err => console.log(err))
     }
 
 }
