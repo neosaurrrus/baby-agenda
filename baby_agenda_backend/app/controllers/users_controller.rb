@@ -11,12 +11,12 @@ class UsersController < ApplicationController
     end
 
     def create 
-        user = User.create!(user_params)
         binding.pry
+        user = User.create!(user_params)
+        
         if user.save
             session[:user_id] = user.id
             render json: user
-
         end
     end
 
