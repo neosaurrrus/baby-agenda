@@ -536,13 +536,13 @@ class Signup {
                 baby_dob:e.target[3].value,
             } 
       
-            fetch(SESSIONS_URL, {
+            fetch(USERS_URL, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify({user:data})
             })
             .then(resp => resp.json())
             .then(res => {
