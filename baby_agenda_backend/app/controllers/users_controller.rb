@@ -12,10 +12,11 @@ class UsersController < ApplicationController
 
     def create 
         user = User.create!(user_params)
+        binding.pry
         if user.save
-            Agenda.create!(user_id: user.id)
             session[:user_id] = user.id
             render json: user
+
         end
     end
 

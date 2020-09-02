@@ -1,6 +1,7 @@
 class SessionsController < ApplicationController
 
   def create
+
       user = User.find_by(name: params[:name])
       user = user.try(:authenticate, params[:password])
       if user
@@ -18,7 +19,7 @@ class SessionsController < ApplicationController
   end
 
   def index
-    # session[:user_id] = 1
+  
 
     if !session[:user_id]
         render json: {
