@@ -545,12 +545,12 @@ class Signup {
                 body: JSON.stringify(data)
             })
             .then(resp => resp.json())
-            .catch(err => console.log(err))
             .then(res => {
                 console.log(res)
                 Login.updateSession(res)
                 Helper.refreshAll()
             })
+            .catch(err => console.log(err))
             
         })
     }
@@ -565,12 +565,13 @@ class Login {
 
     static updateSession(user){
         if (user.error) {this.resetSession()}
-        else {
+        else { //REFECTOR TO USER CLASS
             session.name = user.name
             session.baby_name = user.baby_name
             session.baby_dob = user.dob
             session.id = user.id  
         }
+        new User(user)
     }
    
 
@@ -730,7 +731,6 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
 }
 
 
-//Actual stull the app runs
 class AgendaItem {
     constructor(item){
         this.name = item.name,
@@ -857,6 +857,30 @@ class AgendaItem {
         .catch(err => console.log(err))
     }
 
+}
+
+class User{
+    constructor(user){
+        console.log(user)
+        this.babyPoints = user.baby_points
+        this.babyName = user.baby_name
+        this.babyDob = user.baby_dob
+        this.render()
+    }
+    parseDob(){
+        //get current date
+        //get first 4 for year
+        //get next 2 for month
+        //get last 2 or day
+        //compaare each with today's day
+        //return  a "1 year, 2 months and 14 days old" type string
+    }
+
+    render(){
+        const wrapper = document.getElementById("baby-wrapper")
+        wrapper.innerHTML = `${this.babyName} ${this.babyPoints} ${this.babyDob}`
+
+    }
 }
 
 
