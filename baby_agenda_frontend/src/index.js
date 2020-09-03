@@ -861,13 +861,49 @@ class AgendaItem {
 
 class User{
     constructor(user){
-        console.log(user)
         this.babyPoints = user.baby_points
         this.babyName = user.baby_name
-        this.babyDob = user.baby_dob
+        this.babyDob = user.baby_dob.toString()
+        this.parseLevel()
+        this.parseDob()
         this.render()
     }
+
+    parseLevel(){
+        if (this.babyPoints === 0){
+            this.babyLevel = 1
+        }
+        else {
+            this.babyLevel = Math.floor(this.babyPoints / 10 )
+        }
+    }
     parseDob(){
+        let dob = {
+            day: Number(this.babyDob.slice(-2)),
+            month: Number(this.babyDob.slice(-4,-2)),
+            year: Number(this.babyDob.slice(0,4))
+        }
+        let dobDate = new Date(`${dob.month}/${dob.day}/${dob.year}`)
+        let todaysDate = Date.now()
+        let differenceInSeconds = todaysDate - dobDate
+    
+        let differenceInDays = differenceInSeconds / (1000 *3600 *24)
+        let differenceInMonths = differenceInDays / 30
+        let differenceInYears = differenceInSeconds / (1000 * 31556952)
+        this.dateInfo = {
+            totalYears : Math.floor(differenceInYears),
+            totalMonths : Math.floor(differenceInMonths),
+            totalDays: Math.floor(differenceInDays),
+            totalWeeks: Math.floor(differenceInDays / 7),
+        }
+        this.dateInfo.remainingMonths= Math.floor(this.dateInfo.totalMonths % 12),
+        this.dateInfo.remainingDays=Math.floor((this.dateInfo.totalDays % 365) % 30),
+        this.dateInfo.remainingWeeks=Math.floor((this.dateInfo.totalDays % 365) / 7)
+        
+     
+       
+
+        
         //get current date
         //get first 4 for year
         //get next 2 for month
@@ -878,8 +914,10 @@ class User{
 
     render(){
         const wrapper = document.getElementById("baby-wrapper")
-        wrapper.innerHTML = `${this.babyName} ${this.babyPoints} ${this.babyDob}`
-
+        wrapper.innerHTML = `${this.babyName} ${this.babyPoints}`
+        Helper.buildElement(wrapper, "h2", "id", "baby_profile_name", this.babyName)
+        Helper.buildElement(wrapper, "h3", "id", "baby_profile_xp", `Level:${this.babyLevel}`)
+        Helper.buildElement(wrapper, "h4", "id", "baby_profile_age", `${this.dateInfo.totalYears} year(s), ${this.dateInfo.remainingMonths} month(s) and ${this.dateInfo.remainingDays} day(s) old`, this.babyName)
     }
 }
 
