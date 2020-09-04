@@ -1,7 +1,7 @@
 class ActivitiesController < ApplicationController
   
     def index
-        activities = Activity.all
+        activities = Activity.random_6
         render json: activities 
     end
 
@@ -17,10 +17,8 @@ class ActivitiesController < ApplicationController
     end
 
     def update
-       
         activity = Activity.find(params[:id])
         activity.update(activity_params)
-      
         render json: activity
     end
     def destroy

@@ -21,12 +21,15 @@ class Helper {
         const loginSplash = document.getElementById(`login-splash`)
         if (loginSplash) {loginSplash.remove()}
         new Nav()
-        
         Activity.all()
     }
     static refreshAgenda(){
         document.getElementById(`agenda-wrapper`).innerHTML = ""
         new Agenda()
+    }
+    static refreshBaby(){
+        document.getElementById(`baby-wrapper`).innerHTML = ""
+        new Baby()
     }
 
     static openActivitySplash(){
@@ -566,12 +569,14 @@ class Login {
     static updateSession(user){
         if (user.error) {this.resetSession()}
         else { //REFECTOR TO USER CLASS
+            console.log(user)
             session.name = user.name
             session.baby_name = user.baby_name
             session.baby_dob = user.dob
             session.id = user.id  
+            session.babyPoints = user.baby_points
         }
-        new User(user)
+        new Baby(user)
     }
    
 
@@ -652,6 +657,7 @@ class Login {
             Login.updateSession(res)
             Helper.refreshAll()
             Helper.refreshAgenda()
+            
         })
         .catch(err => console.log(err))
     }
@@ -666,6 +672,7 @@ class Logout{
         session.baby_name = null
         session.baby_dob =  null
         session.id =  null
+        session.babyPoints = null
         Helper.refreshAll()
     }
 }
@@ -744,7 +751,6 @@ class AgendaItem {
         this.render()
         this.upvoteEvent()
         this.downvoteEvent()
-    
     }
 
     render(){
@@ -759,9 +765,30 @@ class AgendaItem {
         document.getElementById("agenda-wrapper").appendChild(agenda_node)
     }
 
+    completeActivity(){
+        session.babyPoints += 100
+        
+        fetch(USERS_URL+"/"+session.id, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify({id: session.id, baby_points:session.babyPoints})
+        })
+        .then(resp => resp.json())
+        .then(res => {
+            console.log(res)
+            Helper.refreshAll()
+            new Baby(res)
+        })
+        .catch(err => console.log(err))
+    }
+
     upvoteEvent(){
         const button = document.getElementById(this.id+"u")
         button.addEventListener("click", (e) => {
+          
             this.upvoteSubmit()
         })
     }
@@ -787,6 +814,7 @@ class AgendaItem {
         })
         .then(resp => resp.json())
         .then((res) => {
+            this.completeActivity()
             console.log("Upvote Given!")}
             )
         .catch(err => console.log(err))
@@ -837,6 +865,7 @@ class AgendaItem {
         })
         .then(resp => resp.json())
         .then((res) => {
+            this.completeActivity()
             console.log("vote Given!")}
             )
         .catch(err => console.log(err))
@@ -851,7 +880,7 @@ class AgendaItem {
         })
         .then(resp => resp.json())
         .then(data => {
-            console.log(data.message)
+            this.completeActivity()
             new Agenda
             Helper.refreshAll()})
         .catch(err => console.log(err))
@@ -859,8 +888,9 @@ class AgendaItem {
 
 }
 
-class User{
+class Baby{
     constructor(user){
+       
         this.babyPoints = user.baby_points
         this.babyName = user.baby_name
         this.babyDob = user.baby_dob.toString()
@@ -870,11 +900,12 @@ class User{
     }
 
     parseLevel(){
+        console.log(this.babyPoints)
         if (this.babyPoints === 0){
-            this.babyLevel = 1
+            this.babyLevel = 0
         }
         else {
-            this.babyLevel = Math.floor(this.babyPoints / 10 )
+            this.babyLevel = Math.floor(this.babyPoints / 1 )
         }
     }
     parseDob(){
@@ -899,17 +930,7 @@ class User{
         this.dateInfo.remainingMonths= Math.floor(this.dateInfo.totalMonths % 12),
         this.dateInfo.remainingDays=Math.floor((this.dateInfo.totalDays % 365) % 30),
         this.dateInfo.remainingWeeks=Math.floor((this.dateInfo.totalDays % 365) / 7)
-        
-     
-       
 
-        
-        //get current date
-        //get first 4 for year
-        //get next 2 for month
-        //get last 2 or day
-        //compaare each with today's day
-        //return  a "1 year, 2 months and 14 days old" type string
     }
 
     render(){
@@ -917,7 +938,7 @@ class User{
         wrapper.innerHTML = `${this.babyName} ${this.babyPoints}`
         Helper.buildElement(wrapper, "h2", "id", "baby_profile_name", this.babyName)
         Helper.buildElement(wrapper, "h3", "id", "baby_profile_xp", `Level:${this.babyLevel}`)
-        Helper.buildElement(wrapper, "h4", "id", "baby_profile_age", `${this.dateInfo.totalYears} year(s), ${this.dateInfo.remainingMonths} month(s) and ${this.dateInfo.remainingDays} day(s) old`, this.babyName)
+        Helper.buildElement(wrapper, "h4", "id", "baby_profile_age", `${this.dateInfo.totalYears} year(s), ${this.dateInfo.remainingMonths} month(s) and ${this.dateInfo.remainingDays} day(s) old`)
     }
 }
 
