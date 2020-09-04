@@ -1,7 +1,10 @@
-1. Add points mechanism
-2. Add Random loot?
-3. Produce Quest log
+1. Add points mechanism (adding poitns when quest is done)
 
+~ To Do
+
+2. Add Random loot? (faker object when quest is done)
+3. Produce Questlog (make it smaller and sexier. Maybe wait for styling?)
+<!-- 4. Daily Quests (limit, random show of activites to choose from) -->
 
 
 # Styling 
@@ -10,8 +13,14 @@
 2. Research UI Elements
 3. Consider (minor) sAnimations
 
-# Refactoring
+# submission
 
-1. Revisit Class Structures - Maybe Inferface class for stuff that is seen??
+1. blog post 
+2. video
+3. actually submitting
+
+# Refactoring, 
+
+1. Revisit Class Structures
 2. Variable naming convention
 3. DRY up WET Code. 
