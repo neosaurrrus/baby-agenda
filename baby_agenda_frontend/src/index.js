@@ -693,7 +693,7 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
     //all method - to show all agenda Items
 
     buildAgenda(){
-        document.getElementById(`agenda-wrapper`).innerHTML = `<h3>${session.baby_name}'s Quests`
+        document.getElementById(`agenda-wrapper`).innerHTML = `<h3>${session.baby_name}'s Current Quests`
 
         fetch(USERS_URL+"/"+session.id)
         .then(resp => resp.json())
