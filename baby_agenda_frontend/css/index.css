@@ -1,13 +1,22 @@
+
+:root{
+    --darkground:rgba(20,20,20,0.6);
+    --lightground:rgba(200,200,200,0.6);
+    --midground:rgba(168, 168, 168, 0.61);
+    --darktext:rgba(68,68,68);
+    --lighttext:rgba(223,223,223);
+}
+
 html {
     margin: 0 auto;
 }
 body {
-    background-color: rgb(200,200,200);
+    background-color: var(--lightground);
     font-family: adobe-garamond-pro, serif;
     font-size: 20px;
     font-style: normal;
     font-weight: 400;
-    color: #444444;
+    color: var(--darktext);
     margin: 0 auto;
 }
 
@@ -17,32 +26,25 @@ body {
 }
 
 header {
-    margin: 0 auto;
+    margin: 0 auto 25px;
     padding:50px;
     height: 250px;
-    background-color: rgba(20,20,20,0.6);
-    color: rgb(223,223,233);
+    background-color:var(--darkground);
+    color: var(--lighttext);
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-
+    
 }
 
-main{
-    width: 80%;
-    margin: 0 auto;
-}
 
-#activity-wrapper{
-    display: flex;
-    width: 80%;
-    justify-content: space-between;
-}
+
+
 
 #activity-splash{
-    color: rgba(223,223,223);
-    background: rgba(20,20,20,0.8);
+    color: var(--lighttext);
+    background: var(--darkground);
     margin: 0 auto;
     width: 80%;
     z-index:100;
@@ -52,8 +54,8 @@ main{
     padding: 30px;
 }
 #login-splash{
-    color: rgba(223,223,223);
-    background: rgba(20,20,20,0.8);
+    color: var(--lighttext);
+    background: var(--darkground);
     margin: 0 auto;
     width: 40%;
     z-index:100;
@@ -64,23 +66,87 @@ main{
 }
 
 
-.activity-card{
-    display: inline-flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-width: 30%;
-    background: pink;
-    margin: 25px;
+
+main {
+	display: grid;
+	justify-content: center;
+	grid-gap: 50px;
+	width: 80%;
+	grid-template-columns: 1fr;
+	margin: 0 auto;
 }
-.agenda-card{
-    display: inline-flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-width: 30%;
-    background: rgb(53, 95, 64);
-    margin: 25px;
+#user-wrapper{
+    width: 80%;
+    margin: 50px auto;
+    display: none;
+    grid-template-columns: 1fr;
+}
+#baby-wrapper{
+    background: var(--darkground);
+    color: var(--lighttext);
+    text-align: center;
+    min-width: 500px;
+}
+#agenda-wrapper {
+	background: var(--midground);
+	display: grid;
+	/* justify-content: center; */
+	min-width: 500px;
+	margin-top: 50px;
 }
 
+#activities-header {
+    background: var(--darkground);
+    color: var(--lighttext);
+    text-align: center;
+    min-width: 500px;
+
+    padding: 25px;
+}
+#activities-wrapper {
+    background: var(--lightground);
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-rows: 250px 250px 250px;
+    grid-auto-flow: row;
+    justify-items: center;
+    padding: 25px;
+}
+
+
+.activity-card {
+    background: var(--darkground);
+    color: var(--lighttext);
+	margin: 10px;
+	width: 250px;
+	height: 200px;
+	display: grid;
+	align-content: space-between;
+    text-align: center;
+    padding: 10px
+}
+.agenda-card {
+	background: var(--midground);
+	display: grid;
+	grid-template-columns: 4fr 60px 60px 60px;
+	align-items: center;
+	padding: 10px;
+	margin: 20px;
+}
+
+.activity-card button {
+	height: 30px;
+	width: 50%;
+	margin: 20px auto;
+	font-size: 1rem;
+}
+
+.agenda-card button {
+    font-size: 1.5rem;
+    border-radius: 100% ;
+    height: 50px;
+    width: 50px;
+}
 
 
 
@@ -91,8 +157,8 @@ form div {
 
 input,textarea,select,option, #form-cancel-button {
  width:95%;
- background: rgba(0, 0, 0, 0.6);
- color: rgb(223,223,233);
+ background: var(--darkground);
+ color: var(--lighttext);
  font-family: adobe-garamond-pro, serif;
  font-size: 20px;
  font-style: normal;
