@@ -264,55 +264,27 @@ class ActivityShow {
     renderActivityShow(){
         const activity_node = document.createElement("div")
         activity_node.setAttribute(`id`,`activity-splash`)
-        const activity_name_node = document.createElement("h3")
-        const activity_name_node_text = document.createTextNode(this.name)
-        activity_name_node.appendChild(activity_name_node_text)
-        activity_node.appendChild(activity_name_node)
-        const activity_description_node = document.createElement("p")
-        const activity_description_node_text = document.createTextNode(this.description)
-        activity_description_node.appendChild(activity_description_node_text)
-        activity_node.appendChild(activity_description_node)
 
-        const activity_minimum_age_node = document.createElement("p")
-        const activity_minimum_age_node_text = document.createTextNode(this.minimum_age)
-        activity_minimum_age_node.appendChild(activity_minimum_age_node_text)
-        activity_node.appendChild(activity_minimum_age_node)
+        Helper.buildElement(activity_node, "h3", "class", "show-activity-name", `${this.name}`)
+        Helper.buildElement(activity_node, "p", "class", "show-activity-description", `${this.description}`)
+        Helper.buildElement(activity_node, "p", "class", "show-activity-minimum-age", `Minimum recommended age: ${this.minimum_age}`)
+        Helper.buildElement(activity_node, "p", "class", "show-activity-time-taken", `Minimum time: ${this.minimum_time_taken}`)
+        Helper.buildElement(activity_node, "p", "class", "show-activity-upvotes", `Liked: ${this.upvotes}`)
+        Helper.buildElement(activity_node, "p", "class", "show-activity-downvotes", `Disiked: ${this.downvotes}`)
+  
 
-        const activity_minimum_time_taken_node = document.createElement("p")
-        const activity_minimum_time_taken_node_text = document.createTextNode(this.minimum_time_taken)
-        activity_minimum_time_taken_node.appendChild(activity_minimum_time_taken_node_text)
-        activity_node.appendChild(activity_minimum_time_taken_node)
 
-        const activity_upvotes_node = document.createElement("p")
-        const activity_upvotes_node_text = document.createTextNode(this.upvotes)
-        activity_upvotes_node.appendChild(activity_upvotes_node_text)
-        activity_node.appendChild(activity_upvotes_node)
-
-        const activity_downvotes_node = document.createElement("p")
-        const activity_downvotes_node_text = document.createTextNode(this.downvotes)
-        activity_downvotes_node.appendChild(activity_downvotes_node_text)
-        activity_node.appendChild(activity_downvotes_node)
         
         //logged in buttons
         if (Helper.currentUser()){
-            const activity_edit_node = document.createElement("button")
-            activity_edit_node.setAttribute(`id`,`show-edit-button`)
-            const activity_edit_node_text = document.createTextNode("Edit")
-            activity_edit_node.appendChild(activity_edit_node_text)
-            activity_node.appendChild(activity_edit_node)
-            //delete
-            const activity_delete_node = document.createElement("button")
-            activity_delete_node.setAttribute(`id`,`show-delete-button`)
-            const activity_delete_node_text = document.createTextNode("delete")
-            activity_delete_node.appendChild(activity_delete_node_text)
-            activity_node.appendChild(activity_delete_node)
-            //Add to agenda.
-            
+            Helper.buildElement(activity_node, "button", "id", "show-edit-button", `Edit`)
+            Helper.buildElement(activity_node, "button", "id", "show-delete-button", `Delete`)
             Helper.buildElement(activity_node, "button", "id", "show-agenda-button", "Add to Agenda")
           
         }
         
-
+        Helper.buildElement(activity_node, "button", "id", "show-agenda-button", "Add to Agenda")
+          
 
 
 
