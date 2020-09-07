@@ -1,9 +1,9 @@
-1. Add points mechanism (adding poitns when quest is done)
+<!-- 1. Add points mechanism (adding poitns when quest is done) -->
 
 ~ To Do
 
 2. Add Random loot? (faker object when quest is done)
-3. Produce Questlog (make it smaller and sexier. Maybe wait for styling?)
+3. Produce Questlog (make it smaller and sexier. Maybe wait for styling?) DO THIS!!!
 <!-- 4. Daily Quests (limit, random show of activites to choose from) -->
 
 

@@ -25,6 +25,8 @@ class Helper {
     }
     static refreshAgenda(){
         document.getElementById(`agenda-wrapper`).innerHTML = ""
+        document.getElementById(`user-wrapper`).setAttribute(`style`,`display:grid`)
+        document.getElementById(`activities-header`).textContent = `Availiable Quests for ${session.baby_name}` 
         new Agenda()
     }
     static refreshBaby(){
@@ -673,6 +675,8 @@ class Logout{
         session.baby_dob =  null
         session.id =  null
         session.babyPoints = null
+        document.getElementById(`user-wrapper`).setAttribute(`style`,`display:none`)
+        document.getElementById(`activities-header`).textContent = "You have logged out sucessfully."
         Helper.refreshAll()
     }
 }
@@ -734,9 +738,7 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
                     new Agenda
                 }) 
     }
-    
 }
-
 
 class AgendaItem {
     constructor(item){
@@ -752,19 +754,17 @@ class AgendaItem {
         this.upvoteEvent()
         this.downvoteEvent()
     }
-
     render(){
         const agenda_node = document.createElement("div")
         agenda_node.setAttribute('class', 'agenda-card')
-        Helper.buildElement(agenda_node, "h3", "class", "agenda-title", `${this.name}`)
+        Helper.buildElement(agenda_node, "h4", "class", "agenda-title", `${this.name}`)
        
-        Helper.buildElement(agenda_node, "button", "id", `${this.id}u`, `Upvote`)
-        Helper.buildElement(agenda_node, "button", "id",`${this.id}d`, `Downvote`)
-        Helper.buildElement(agenda_node, "button", "id", "agenda_details", `Details`)
+        Helper.buildElement(agenda_node, "button", "id", `${this.id}u`, `👍`)
+        Helper.buildElement(agenda_node, "button", "id",`${this.id}d`, `👎`)
+        Helper.buildElement(agenda_node, "button", "id", "agenda_details", `❓`)
         
         document.getElementById("agenda-wrapper").appendChild(agenda_node)
     }
-
     completeActivity(){
         session.babyPoints += 100
         
@@ -834,17 +834,12 @@ class AgendaItem {
             Helper.refreshAll()})
         .catch(err => console.log(err))
     }
-
-    
-
     downvoteEvent(){
             const button = document.getElementById(this.id+"d")
             button.addEventListener("click", (e) => {
                 this.downvoteSubmit()
             })
     }
-
-
     downvoteSubmit(){
         const count = this.downvotes+ 1
         console.log(count)
@@ -935,7 +930,7 @@ class Baby{
 
     render(){
         const wrapper = document.getElementById("baby-wrapper")
-        wrapper.innerHTML = `${this.babyName} ${this.babyPoints}`
+        wrapper.innerHTML = ``
         Helper.buildElement(wrapper, "h2", "id", "baby_profile_name", this.babyName)
         Helper.buildElement(wrapper, "h3", "id", "baby_profile_xp", `Level:${this.babyLevel}`)
         Helper.buildElement(wrapper, "h4", "id", "baby_profile_age", `${this.dateInfo.totalYears} year(s), ${this.dateInfo.remainingMonths} month(s) and ${this.dateInfo.remainingDays} day(s) old`)
