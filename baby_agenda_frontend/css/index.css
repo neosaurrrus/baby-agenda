@@ -46,7 +46,7 @@ header {
 
 #activity-splash {
 	color: var(--lighttext);
-	background: var(--darkground);
+	background: var(--darkerground);
 	margin: 0 auto;
 	width: 80%;
 	z-index: 100;
