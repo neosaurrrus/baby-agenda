@@ -18,6 +18,7 @@ body {
     font-weight: 400;
     color: var(--darktext);
     margin: 0 auto;
+    text-align: center;
 }
 
 .logo{
@@ -124,6 +125,10 @@ main {
 	align-content: space-between;
     text-align: center;
     padding: 10px
+}
+
+.activity-card h4 {
+    text-align: center;
 }
 .agenda-card {
 	background: var(--midground);
