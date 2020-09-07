@@ -81,19 +81,18 @@ class Activity{
     render(){
      
         const activity_node = document.createElement("div")
+        const activity_votes_node = document.createElement("div")
         activity_node.setAttribute('class', 'activity-card')
-        const activity_name_node = document.createElement("h3")
-        const activity_name_node_text = document.createTextNode(this.name)
-        activity_name_node.appendChild(activity_name_node_text)
-        activity_node.appendChild(activity_name_node)
+        Helper.buildElement(activity_node, "h3", "class", "activity-text", this.name)
+    
+        Helper.buildElement(activity_votes_node, "span", "class", "activity-upvotes", `😃 ${this.upvotes} `)
+        Helper.buildElement(activity_votes_node, "span", "class", "activity-upvotes", `😒 ${this.downvotes}`)
+          
 
         
         //Details Button
-        const activity_show_node = document.createElement("button")
-        activity_show_node.setAttribute(`id`,`show-button-${this.id}`)
-        const activity_show_node_text = document.createTextNode("Details")
-        activity_show_node.appendChild(activity_show_node_text)
-        activity_node.appendChild(activity_show_node)
+        Helper.buildElement(activity_node, "button", "id", `show-button-${this.id}`, "Details")
+        activity_node.appendChild(activity_votes_node)
         document.getElementById("activities-wrapper").appendChild(activity_node)
         this.setShowButtonEvent()
     }
