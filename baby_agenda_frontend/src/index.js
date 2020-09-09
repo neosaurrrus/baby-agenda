@@ -17,10 +17,12 @@ class Helper {
     static closeActivitySplash() {
         const activitySplash = document.getElementById(`activity-splash`)
         if (activitySplash) {activitySplash.remove() }
+        new Nav()
     }
     static closeLogonSplash() {
         const loginSplash = document.getElementById(`login-splash`)
         if (loginSplash) {loginSplash.remove()}
+        new Nav()
     }
 
     static refreshActivities(){
@@ -540,20 +542,17 @@ class Signup {
 
 class Login {
     static checkSession(){
-        //fetch session info 
         return session
     }
 
     static updateSession(user){
         if (user.error) {this.resetSession()}
-        else { //REFECTOR TO USER CLASS
-            console.log(user)
+        else { 
             session.name = user.name
             session.baby_name = user.baby_name
             session.baby_dob = user.dob
             session.id = user.id  
             session.babyPoints = user.baby_points
-            console.log(session)
         }
         new Baby(user)
     }
@@ -583,7 +582,7 @@ class Login {
             <label for="add_activity_description">Password:</label>
             <input type="password" id="add_activity_password" placeholder="Your previous password">
             </div>
-            <input type="submit" id="submit">
+            <input type="submit" id="submit" value="Login">
             </form>
         `
         
@@ -620,7 +619,6 @@ class Login {
         const data = {
             name:e.target[0].value, 
             password:e.target[1].value,
-    
         } 
         fetch(SESSIONS_URL, {
             method: 'POST',
@@ -652,9 +650,10 @@ class Logout{
         session.baby_dob =  null
         session.id =  null
         session.babyPoints = null
-        document.getElementById(`user-wrapper`).setAttribute(`style`,`display:none`)
+        document.getElementById(`user-wrapper`).setAttribute(`style`,`display:none`) 
+        document.getElementById(`session-text`).innerHTML = ""
         document.getElementById(`activities-header`).textContent = "You have logged out sucessfully."
-       
+        new Nav()
     }
 }
 
@@ -739,7 +738,7 @@ class AgendaItem {
        
         Helper.buildElement(agenda_node, "button", "id", `${this.id}u`, `👍`)
         Helper.buildElement(agenda_node, "button", "id",`${this.id}d`, `👎`)
-        Helper.buildElement(agenda_node, "button", "id", "agenda_details", `❓`)
+
         
         document.getElementById("agenda-wrapper").appendChild(agenda_node)
     }
@@ -771,9 +770,7 @@ class AgendaItem {
     }
     upvoteSubmit(){
         const newUpvoteCount = this.upvotes+ 1
-        console.log(newUpvoteCount)
-        //get name of item (easy)
-        //fetch put request to update an activity with an upvote
+  
         const data = {
             upvotes: newUpvoteCount,
             id: this.activity_id,
@@ -818,7 +815,7 @@ class AgendaItem {
     }
     downvoteSubmit(){
         const count = this.downvotes+ 1
-        console.log(count)
+       
         const data = {
             downvotes: count,
             id: this.activity_id,
