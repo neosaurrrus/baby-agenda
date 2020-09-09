@@ -492,7 +492,7 @@ class Signup {
            
                 
             <div>
-                <input type="submit" id="submit">
+                <input type="submit" id="submit" value="Sign up!">
             </div>
             </form>
         `
@@ -532,7 +532,9 @@ class Signup {
             .then(res => {
                 Login.updateSession(res)
                 Helper.closeLogonSplash()
+                Helper.refreshAgenda()
                 Helper.refreshActivities()
+                
             })
             .catch(err => console.log(err))
         })
@@ -858,7 +860,6 @@ class AgendaItem {
 
 class Baby{
     constructor(user){
-       
         this.babyPoints = user.baby_points
         this.babyName = user.baby_name
         this.babyDob = user.baby_dob.toString()
@@ -879,8 +880,8 @@ class Baby{
     parseDob(){
         let dob = {
             day: Number(this.babyDob.slice(-2)),
-            month: Number(this.babyDob.slice(-4,-2)),
-            year: Number(this.babyDob.slice(0,4))
+            month: Number(this.babyDob.slice(-5,-3)),
+            year: Number(this.babyDob .slice(0,4))
         }
         let dobDate = new Date(`${dob.month}/${dob.day}/${dob.year}`)
         let todaysDate = Date.now()

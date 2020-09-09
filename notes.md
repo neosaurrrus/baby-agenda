@@ -6,7 +6,8 @@
 <!-- 3. Produce Questlog (make it smaller and sexier. Maybe wait for styling?) DO THIS!!! -->
 <!-- 4. Daily Quests (limit, random show of activites to choose from) -->
 
-1. Refresh activites with button, without doing so for other things.
+1. fix edit/delete when not owneer thing.
+
 
 # submission
 
