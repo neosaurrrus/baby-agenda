@@ -14,12 +14,17 @@ class Helper {
         .then (res =>res.json())
     }
 
-    static refreshAll(){
-        document.getElementById(`activities-wrapper`).innerHTML = ""
+    static closeActivitySplash() {
         const activitySplash = document.getElementById(`activity-splash`)
         if (activitySplash) {activitySplash.remove() }
+    }
+    static closeLogonSplash() {
         const loginSplash = document.getElementById(`login-splash`)
         if (loginSplash) {loginSplash.remove()}
+    }
+
+    static refreshActivities(){
+        document.getElementById(`activities-wrapper`).innerHTML = ""
         new Nav()
         Activity.all()
     }
@@ -51,8 +56,11 @@ class Helper {
         node.appendChild(node_text)
         target.appendChild(node)
     }
-    static currentUser(){
-        return session.id
+    static currentUser(id){
+        return session.id == id
+    }
+    static loggedIn(){
+        return Boolean(session.id)
     }
 }
 
@@ -118,15 +126,13 @@ class ActivityShow {
         this.minimum_time_taken = activity.minimum_time_taken,
         this.upvotes = activity.upvotes,
         this.downvotes = activity.downvotes
+        this.user_id = activity.user_id
         this.renderActivityShow()
     }
-
-  
-    //need to add remove event listeners to stop the 2 activites bug
      showCloseEvent(){
         const showCloseButton = document.getElementById(`show-close-button`)
         showCloseButton.addEventListener("click", (e) => {
-            Helper.refreshAll()
+            Helper.closeActivitySplash()
         })
     }
     showEditEvent(){
@@ -210,7 +216,7 @@ class ActivityShow {
     editCancelEvent(){
         const button = document.getElementById(`edit-cancel-button`)
         button.addEventListener("click", (e) => {
-            Helper.refreshAll()
+            Helper.closeActivitySplash()
         })
     }
     editSubmitEvent(e){
@@ -237,7 +243,10 @@ class ActivityShow {
             body: JSON.stringify(data)
         })
         .then(resp => resp.json())
-        .then(() => {Helper.refreshAll()})
+        .then(() => {
+            Helper.closeActivitySplash()
+            Helper.refreshActivities()
+        })
         .catch(err => console.log(err))
 
     }
@@ -255,7 +264,10 @@ class ActivityShow {
             body: JSON.stringify(data)
         })
         .then(resp => resp.json())
-        .then(data => {Helper.refreshAll()})
+        .then(data => {
+            Helper.closeActivitySplash()
+            Helper.refreshActivities()
+        })
         .catch(err => console.log(err))
     
     }
@@ -271,37 +283,23 @@ class ActivityShow {
         Helper.buildElement(activity_node, "p", "class", "show-activity-time-taken", `Minimum time: ${this.minimum_time_taken}`)
         Helper.buildElement(activity_node, "p", "class", "show-activity-upvotes", `Liked: ${this.upvotes}`)
         Helper.buildElement(activity_node, "p", "class", "show-activity-downvotes", `Disiked: ${this.downvotes}`)
-  
-
-
-        
-        //logged in buttons
-        if (Helper.currentUser()){
+        document.getElementById("activities-wrapper").appendChild(activity_node)
+        //buttons
+        console.log(this)
+        if (Helper.currentUser(this.user_id)){
             Helper.buildElement(activity_node, "button", "id", "show-edit-button", `Edit`)
             Helper.buildElement(activity_node, "button", "id", "show-delete-button", `Delete`)
-            Helper.buildElement(activity_node, "button", "id", "show-agenda-button", "Add to Agenda")
-          
+            this.showEditEvent()
+            this.showDeleteEvent()
         }
-        
-        Helper.buildElement(activity_node, "button", "id", "show-agenda-button", "Add to Agenda")
-          
-
-
-
-        const activity_close_node = document.createElement("button")
-        activity_close_node.setAttribute(`id`,`show-close-button`)
-        const activity_close_node_text = document.createTextNode("Close")
-        activity_close_node.appendChild(activity_close_node_text)
-        activity_node.appendChild(activity_close_node)
-        document.getElementById("activities-wrapper").appendChild(activity_node)
+        if (Helper.loggedIn()){
+            console.log(Helper.loggedIn)
+            Helper.buildElement(activity_node, "button", "id", "show-agenda-button", "Add to Agenda")
+            this.showAgendaEvent()
+        }
+        Helper.buildElement(activity_node, "button", "id", "show-close-button", "Close")
         this.showCloseEvent()
-        this.showEditEvent()
-        this.showDeleteEvent()
-        this.showAgendaEvent()
-      
-    
     }
-
 } //end of ActivityShow
 
 
@@ -349,7 +347,7 @@ class NewActivity {
             </select>
             </div>
             <input type="hidden" id="user_id" value="1">
-            <input type="submit" id="add-activity-submit">
+            <input type="submit" id="submit">
             </form>
         `
         
@@ -372,7 +370,7 @@ class NewActivity {
     addCancelEvent(){
         const button = document.getElementById(`form-cancel-button`)
         button.addEventListener("click", (e) => {
-            Helper.refreshAll()
+            Helper.closeActivitySplash()
         })
     }
     addSubmitEvent(e){
@@ -399,7 +397,9 @@ class NewActivity {
             body: JSON.stringify(data)
         })
         .then(resp => resp.json())
-        .then(res => {Helper.refreshAll()})
+        .then(res => {
+            Helper.closeActivitySplash()
+            Helper.refreshActivities()})
         .catch(err => console.log(err))
     }
 }
@@ -410,7 +410,7 @@ class Nav {
         this.session = document.querySelector("#session-status")
         this.nav.innerHTML = ""
         this.session.innerHTML = ""
-        if (Helper.currentUser()){
+        if (Helper.loggedIn()){
             this.renderSession()
             this.renderNewActivityButton()
             this.renderLogoutButton()
@@ -490,7 +490,7 @@ class Signup {
            
                 
             <div>
-                <input type="submit" id="add-activity-submit">
+                <input type="submit" id="submit">
             </div>
             </form>
         `
@@ -498,9 +498,15 @@ class Signup {
         Helper.buildElement(signupNode, "button", "id", "form-cancel-button", "Cancel")
         
         this.submitSignup()
-        document.getElementById(`form-cancel-button`).addEventListener("click", (e) => {Helper.refreshAll()})
-    }
+        this.signupCancelEvent()
+         }
 
+    signupCancelEvent(){
+        const button = document.getElementById(`form-cancel-button`)
+        button.addEventListener("click", (e) => {
+            Helper.closeActivitySplash()
+        })
+    }
     submitSignup(e){
         const form = document.getElementById(`form-wrapper`)
         form.addEventListener("submit", (e) => {
@@ -522,12 +528,11 @@ class Signup {
             })
             .then(resp => resp.json())
             .then(res => {
-                console.log(res)
                 Login.updateSession(res)
-                Helper.refreshAll()
+                Helper.closeLogonSplash()
+                Helper.refreshActivities()
             })
             .catch(err => console.log(err))
-            
         })
     }
     
@@ -548,6 +553,7 @@ class Login {
             session.baby_dob = user.dob
             session.id = user.id  
             session.babyPoints = user.baby_points
+            console.log(session)
         }
         new Baby(user)
     }
@@ -577,7 +583,7 @@ class Login {
             <label for="add_activity_description">Password:</label>
             <input type="password" id="add_activity_password" placeholder="Your previous password">
             </div>
-            <input type="submit" id="add-activity-submit">
+            <input type="submit" id="submit">
             </form>
         `
         
@@ -600,7 +606,7 @@ class Login {
     loginCancelEvent(){
         const button = document.getElementById(`form-cancel-button`)
         button.addEventListener("click", (e) => {
-            Helper.refreshAll()
+            Helper.closeLogonSplash()
         })
     }
     loginSubmitEvent(e){
@@ -628,7 +634,7 @@ class Login {
         .then(res => {
             // error handle failed login
             Login.updateSession(res)
-            Helper.refreshAll()
+            Helper.closeLogonSplash()
             Helper.refreshAgenda()
             
         })
@@ -648,13 +654,13 @@ class Logout{
         session.babyPoints = null
         document.getElementById(`user-wrapper`).setAttribute(`style`,`display:none`)
         document.getElementById(`activities-header`).textContent = "You have logged out sucessfully."
-        Helper.refreshAll()
+       
     }
 }
 
 class Agenda{ //handles fetching, management and display of a User's Agenda Items
     constructor(activity){
-        if (Helper.currentUser()){
+        if (Helper.loggedIn()){
             this.buildAgenda()
         }
         
@@ -706,6 +712,7 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
                 .then(resp => resp.json())
                 .catch(err => console.log(err))
                 .then(res => {
+                    Helper.refreshActivities()
                     new Agenda
                 }) 
     }
@@ -749,8 +756,7 @@ class AgendaItem {
         })
         .then(resp => resp.json())
         .then(res => {
-            console.log(res)
-            Helper.refreshAll()
+            Helper.refreshActivities()
             new Baby(res)
         })
         .catch(err => console.log(err))
@@ -800,9 +806,8 @@ class AgendaItem {
         })
         .then(resp => resp.json())
         .then(data => {
-            console.log(data.message)
             new Agenda
-            Helper.refreshAll()})
+            Helper.refreshActivities()})
         .catch(err => console.log(err))
     }
     downvoteEvent(){
@@ -848,7 +853,7 @@ class AgendaItem {
         .then(data => {
             this.completeActivity()
             new Agenda
-            Helper.refreshAll()})
+            Helper.refreshActivities()})
         .catch(err => console.log(err))
     }
 
@@ -909,7 +914,8 @@ class Baby{
 }
 
 
-Helper.refreshAll()
+//Actual runtime
+Helper.refreshActivities()
 
 
 

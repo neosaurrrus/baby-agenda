@@ -23,6 +23,16 @@ body {
     
 }
 
+button {
+    font-family: adobe-garamond-pro, serif;
+    font-size: 1.2rem;
+	padding: 5px;
+	margin: 10px;
+	color: var(--lighttext);
+	background-color: var(--darkerground);
+	border: 2px solid var(--lighttext);
+	width: 150px;
+}
 .logo{
     font-size: 5.0rem;
     font-weight: 400;
@@ -37,10 +47,12 @@ header {
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-    
+    justify-content: space-around; 
 }
 
+header button {
+
+}
 
 
 
@@ -48,7 +60,7 @@ header {
 	color: var(--lighttext);
 	background: var(--darkerground);
 	margin: 0 auto;
-	width: 80%;
+	width: 50%;
 	z-index: 100;
 	position: fixed;
 	left: 50%;
@@ -164,19 +176,24 @@ form div {
    padding-bottom: 20px;
 }
 
-input,textarea,select,option, #form-cancel-button {
- width:95%;
+input,textarea,select,option {
+ width:80%;
+ min-width: 50%;
  background: var(--darkground);
  color: var(--lighttext);
+ border: 2px solid var(--lighttext);
  font-family: adobe-garamond-pro, serif;
  font-size: 20px;
  font-style: normal;
  font-weight: 400;
 }
 
+#submit {
+    width: 100px;
+    height: 60px;
+}
 
 label { 
     font-size: 1.3rem;
     display: block;
 }
-
