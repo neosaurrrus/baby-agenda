@@ -124,4 +124,4 @@ I know that the next modules, React and Redux cover ways those issues can be wra
 
 Hit me up if you want to learn more about what I did.
 
-![]{https://github.com/neosaurrrus/baby-agenda/blob/master/baby_agenda_frontend/images/appshot.png}
+![](https://github.com/neosaurrrus/baby-agenda/blob/master/baby_agenda_frontend/images/appshot.png)
