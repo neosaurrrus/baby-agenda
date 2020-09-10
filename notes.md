@@ -1,21 +1,12 @@
-<!-- 1. Add points mechanism (adding poitns when quest is done) -->
-
-~ To Do
-
-2. Add Random loot? (faker object when quest is done)
-<!-- 3. Produce Questlog (make it smaller and sexier. Maybe wait for styling?) DO THIS!!! -->
-<!-- 4. Daily Quests (limit, random show of activites to choose from) -->
-
-1. fix edit/delete when not owneer thing.
 
 
 # submission
 
-1. blog post 
+1. blog post ADD PICTURES TO REPO A?ND BLOG POST
 2. video
 3. actually submitting 
 
-# Refactoring, 
+# Refactoring,post submission.
 
 0. Bug check
 1. Revisit Class Structures
@@ -33,15 +24,13 @@ At this point, it is probably a good idea to point to the [repo!](https://github
 
 # The Plan
 
-I produced a diagram of what I intended to develop:
+I did produce a class diagram to figure out the structure of the app and created user stories.
 
-
-
-However as they say, no plan survives reality.
+However as they say, no plan survives reality. The user stories were mostly correct but as I thought about the app more, the class diagram evolved further.
 
 ## The backend
 
-If you have read my previous posts, you probably know how making a rails app goes based on the class diagram above. Since I left the main focus was supposed to be in the Javascript, I didn't try and do anything too fancy other than what was required for the front end.
+Since I figured the main focus was supposed to be in the Javascript, I didn't try and do anything too fancy other than what was required for the front end.
 
 The rails backend turned out to be quite difficult due making a mistake in implementing it in how it should have been done. That makde me assume that was not the correct way and I began a silly journey trying to do something ultimately simple in a wierd way.
 
@@ -135,3 +124,4 @@ I know that the next modules, React and Redux cover ways those issues can be wra
 
 Hit me up if you want to learn more about what I did.
 
+![]{https://github.com/neosaurrrus/baby-agenda/blob/master/baby_agenda_frontend/images/appshot.png}
