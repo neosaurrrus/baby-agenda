@@ -8,12 +8,55 @@ let session = {
 }
 
 
-class Helper {
-    static fetcher(url){
+
+class Fetcher { //Responsible for handling fetches to the back end
+    static get(url){
         return fetch(url)
         .then (res =>res.json())
     }
+    static data(url, method, data){
+        return (
+            fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(data)
+        })
+        .then (res =>res.json())
+        )
+    }
 
+}
+
+class UI{
+    static getFetcher(url){
+        return fetch(url)
+        .then (res =>res.json())
+    }
+    static dataFetcher(url, method, data){
+        return (
+            fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(data)
+        })
+        .then (res =>res.json())
+        )
+    }
+
+
+
+    static openActivitySplash(){
+        const node = document.createElement("div")
+        node.setAttribute(`id`,`activity-splash`)
+        document.getElementById("activities-wrapper").appendChild(node)
+        return node
+    }
     static closeActivitySplash() {
         const activitySplash = document.getElementById(`activity-splash`)
         if (activitySplash) {activitySplash.remove() }
@@ -40,17 +83,7 @@ class Helper {
         document.getElementById(`baby-wrapper`).innerHTML = ""
         new Baby()
     }
-
-    static openActivitySplash(){
-        const node = document.createElement("div")
-        node.setAttribute(`id`,`activity-splash`)
-        document.getElementById("activities-wrapper").appendChild(node)
-        return node
-    }
-    static closeActivitySplash(){
-        document.getElementById(`activity-splash`).remove()
-    }
-
+  
     static buildElement(target,element, attributeName, attributeValue, textValue){
         const node = document.createElement(element)
         node.setAttribute(attributeName,attributeValue)
@@ -78,9 +111,7 @@ class Activity{
 
     static all(){
         document.getElementById(`activities-wrapper`).innerHTML = ""
-        fetch(ACTIVITIES_URL)
-        .then (res => res.json())
-        .then( data => {
+        Fetcher.get(ACTIVITIES_URL).then( data => {
             data.forEach(activity => {
               return new Activity(activity)
             })
@@ -93,15 +124,15 @@ class Activity{
         const activity_node = document.createElement("div")
         const activity_votes_node = document.createElement("div")
         activity_node.setAttribute('class', 'activity-card')
-        Helper.buildElement(activity_node, "h3", "class", "activity-text", this.name)
+        UI.buildElement(activity_node, "h3", "class", "activity-text", this.name)
     
-        Helper.buildElement(activity_votes_node, "span", "class", "activity-upvotes", `😃 ${this.upvotes} `)
-        Helper.buildElement(activity_votes_node, "span", "class", "activity-upvotes", `😒 ${this.downvotes}`)
+        UI.buildElement(activity_votes_node, "span", "class", "activity-upvotes", `😃 ${this.upvotes} `)
+        UI.buildElement(activity_votes_node, "span", "class", "activity-upvotes", `😒 ${this.downvotes}`)
           
 
         
         //Details Button
-        Helper.buildElement(activity_node, "button", "id", `show-button-${this.id}`, "Details")
+        UI.buildElement(activity_node, "button", "id", `show-button-${this.id}`, "Details")
         activity_node.appendChild(activity_votes_node)
         document.getElementById("activities-wrapper").appendChild(activity_node)
         this.setShowButtonEvent()
@@ -110,8 +141,8 @@ class Activity{
     setShowButtonEvent(){
         const detailsButton = document.getElementById(`show-button-${this.id}`)
         detailsButton.addEventListener("click", (e) => {
-            const act =  Helper.fetcher(`http://localhost:3000/activities/${this.id}`)
-            act.then( a => {
+            Fetcher.get(`http://localhost:3000/activities/${this.id}`)
+            .then( a => {
                 new ActivityShow(a)
             })
         })
@@ -134,13 +165,13 @@ class ActivityShow {
      showCloseEvent(){
         const showCloseButton = document.getElementById(`show-close-button`)
         showCloseButton.addEventListener("click", (e) => {
-            Helper.closeActivitySplash()
+            UI.closeActivitySplash()
         })
     }
     showEditEvent(){
         const showEditButton = document.getElementById(`show-edit-button`)
         showEditButton.addEventListener("click", (e) => {
-            Helper.closeActivitySplash()
+            UI.closeActivitySplash()
             this.renderEditActivityForm()
 
         })
@@ -150,13 +181,10 @@ class ActivityShow {
         
         const showAgendaButton = document.getElementById(`show-agenda-button`)
         showAgendaButton.addEventListener("click", (e) => {
-            Helper.closeActivitySplash()
-            console.log(this)
+            UI.closeActivitySplash()
             Agenda.add(this)
         })
     }
-
-
     showDeleteEvent(){
         const showDeleteButton = document.getElementById(`show-delete-button`)
         showDeleteButton.addEventListener("click", (e) => {
@@ -194,7 +222,7 @@ class ActivityShow {
                 <option value="30-60">30-60 Minutes</option>
                 <option value="over60">Over 60 Minutes</option>
             </select>
-            <input type="submit" id="edit-activity-submit">
+            <input type="submit" id="edit-activity-submit" value="Submit Edits">
             <input type="hidden" id="edit-activity-id" value=${this.id} >
             </form>
         `
@@ -218,7 +246,7 @@ class ActivityShow {
     editCancelEvent(){
         const button = document.getElementById(`edit-cancel-button`)
         button.addEventListener("click", (e) => {
-            Helper.closeActivitySplash()
+            UI.closeActivitySplash()
         })
     }
     editSubmitEvent(e){
@@ -236,18 +264,10 @@ class ActivityShow {
             minimum_time_taken:e.target[3].value,   
             id:e.target[5].value
         } 
-        fetch(ACTIVITIES_URL+`/${data.id}`, {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            body: JSON.stringify(data)
-        })
-        .then(resp => resp.json())
+        Fetcher.data(ACTIVITIES_URL+`/${data.id}`, "PUT", data)
         .then(() => {
-            Helper.closeActivitySplash()
-            Helper.refreshActivities()
+            UI.closeActivitySplash()
+            UI.refreshActivities()
         })
         .catch(err => console.log(err))
 
@@ -257,18 +277,10 @@ class ActivityShow {
         const data = {
             id:this.id, 
         } 
-        fetch(ACTIVITIES_URL+`/${this.id}`, {
-            method: 'DELETE',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            body: JSON.stringify(data)
-        })
-        .then(resp => resp.json())
-        .then(data => {
-            Helper.closeActivitySplash()
-            Helper.refreshActivities()
+        Fetcher.data(ACTIVITIES_URL+`/${this.id}`, "DELETE", data)
+        .then(() => {
+            UI.closeActivitySplash()
+            UI.refreshActivities()
         })
         .catch(err => console.log(err))
     
@@ -278,28 +290,27 @@ class ActivityShow {
     renderActivityShow(){
         const activity_node = document.createElement("div")
         activity_node.setAttribute(`id`,`activity-splash`)
-
-        Helper.buildElement(activity_node, "h3", "class", "show-activity-name", `${this.name}`)
-        Helper.buildElement(activity_node, "p", "class", "show-activity-description", `${this.description}`)
-        Helper.buildElement(activity_node, "p", "class", "show-activity-minimum-age", `Minimum recommended age: ${this.minimum_age}`)
-        Helper.buildElement(activity_node, "p", "class", "show-activity-time-taken", `Minimum time: ${this.minimum_time_taken}`)
-        Helper.buildElement(activity_node, "p", "class", "show-activity-upvotes", `Liked: ${this.upvotes}`)
-        Helper.buildElement(activity_node, "p", "class", "show-activity-downvotes", `Disiked: ${this.downvotes}`)
+        UI.buildElement(activity_node, "h3", "class", "show-activity-name", `${this.name}`)
+        UI.buildElement(activity_node, "p", "class", "show-activity-description", `${this.description}`)
+        UI.buildElement(activity_node, "p", "class", "show-activity-minimum-age", `Minimum recommended age: ${this.minimum_age}`)
+        UI.buildElement(activity_node, "p", "class", "show-activity-time-taken", `Minimum time: ${this.minimum_time_taken}`)
+        UI.buildElement(activity_node, "p", "class", "show-activity-upvotes", `Liked: ${this.upvotes}`)
+        UI.buildElement(activity_node, "p", "class", "show-activity-downvotes", `Disiked: ${this.downvotes}`)
         document.getElementById("activities-wrapper").appendChild(activity_node)
         //buttons
         console.log(this)
-        if (Helper.currentUser(this.user_id)){
-            Helper.buildElement(activity_node, "button", "id", "show-edit-button", `Edit`)
-            Helper.buildElement(activity_node, "button", "id", "show-delete-button", `Delete`)
+        if (UI.currentUser(this.user_id)){
+            UI.buildElement(activity_node, "button", "id", "show-edit-button", `Edit`)
+            UI.buildElement(activity_node, "button", "id", "show-delete-button", `Delete`)
             this.showEditEvent()
             this.showDeleteEvent()
         }
-        if (Helper.loggedIn()){
-            console.log(Helper.loggedIn)
-            Helper.buildElement(activity_node, "button", "id", "show-agenda-button", "Add to Agenda")
+        if (UI.loggedIn()){
+            console.log(UI.loggedIn)
+            UI.buildElement(activity_node, "button", "id", "show-agenda-button", "Add to Agenda")
             this.showAgendaEvent()
         }
-        Helper.buildElement(activity_node, "button", "id", "show-close-button", "Close")
+        UI.buildElement(activity_node, "button", "id", "show-close-button", "Close")
         this.showCloseEvent()
     }
 } //end of ActivityShow
@@ -372,7 +383,7 @@ class NewActivity {
     addCancelEvent(){
         const button = document.getElementById(`form-cancel-button`)
         button.addEventListener("click", (e) => {
-            Helper.closeActivitySplash()
+            UI.closeActivitySplash()
         })
     }
     addSubmitEvent(e){
@@ -390,18 +401,10 @@ class NewActivity {
             minimum_time_taken:e.target[3].value,
             user_id:e.target[4].value
         } 
-        fetch(ACTIVITIES_URL, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            body: JSON.stringify(data)
-        })
-        .then(resp => resp.json())
+        fetch(ACTIVITIES_URL, "POST", data)
         .then(res => {
-            Helper.closeActivitySplash()
-            Helper.refreshActivities()})
+            UI.closeActivitySplash()
+            UI.refreshActivities()})
         .catch(err => console.log(err))
     }
 }
@@ -412,7 +415,7 @@ class Nav {
         this.session = document.querySelector("#session-status")
         this.nav.innerHTML = ""
         this.session.innerHTML = ""
-        if (Helper.loggedIn()){
+        if (UI.loggedIn()){
             this.renderSession()
             this.renderNewActivityButton()
             this.renderLogoutButton()
@@ -428,31 +431,31 @@ class Nav {
     
 
     renderSession(){
-            Helper.buildElement(this.session, "div", "id", "session-text", `${session.name}`)  
+            UI.buildElement(this.session, "div", "id", "session-text", `${session.name}`)  
     }
     renderNewActivityButton(){
-        Helper.buildElement(this.nav, "button", "id", "add-activity-button", "New Activity")
+        UI.buildElement(this.nav, "button", "id", "add-activity-button", "New Activity")
         const newActivityButton = document.getElementById(`add-activity-button`)
         newActivityButton.addEventListener("click", (e) => {
             return new NewActivity()
         })
     }
     renderLoginButton(){
-        Helper.buildElement(this.nav, "button", "id", "login-button", "Login")
+        UI.buildElement(this.nav, "button", "id", "login-button", "Login")
         const button = document.getElementById(`login-button`)
         button.addEventListener("click", (e) => {
             return new Login()
         })
     }
     renderLogoutButton(){
-        Helper.buildElement(this.nav, "button", "id", "logout-button", "Logout")
+        UI.buildElement(this.nav, "button", "id", "logout-button", "Logout")
         const button = document.getElementById(`logout-button`)
         button.addEventListener("click", (e) => {
             return new Logout()
         })
     }
     renderSignupButton(){
-        Helper.buildElement(this.nav, "button", "id", "signup-button", "Signup")
+        UI.buildElement(this.nav, "button", "id", "signup-button", "Signup")
         const button = document.getElementById(`signup-button`)
         button.addEventListener("click", (e) => {
             return new Signup()
@@ -466,9 +469,9 @@ class Signup {
     }
     renderSignupForm(){
         //splash
-        const signupNode = Helper.openActivitySplash()
+        const signupNode = UI.openActivitySplash()
         //title
-        Helper.buildElement(signupNode, "h2", "id", "form-heading", "Signup for full access")
+        UI.buildElement(signupNode, "h2", "id", "form-heading", "Signup for full access")
         //actual form
         const form = document.createElement("div")
         form.innerHTML = `
@@ -497,7 +500,7 @@ class Signup {
             </form>
         `
         signupNode.appendChild(form)
-        Helper.buildElement(signupNode, "button", "id", "form-cancel-button", "Cancel")
+        UI.buildElement(signupNode, "button", "id", "form-cancel-button", "Cancel")
         
         this.submitSignup()
         this.signupCancelEvent()
@@ -506,7 +509,7 @@ class Signup {
     signupCancelEvent(){
         const button = document.getElementById(`form-cancel-button`)
         button.addEventListener("click", (e) => {
-            Helper.closeActivitySplash()
+            UI.closeActivitySplash()
         })
     }
     submitSignup(e){
@@ -519,22 +522,12 @@ class Signup {
                 baby_name:e.target[2].value,
                 baby_dob:e.target[3].value,
             } 
-      
-            fetch(USERS_URL, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                },
-                body: JSON.stringify({user:data})
-            })
-            .then(resp => resp.json())
+            Fetcher.data(USERS_URL, "POST", {user:data})
             .then(res => {
                 Login.updateSession(res)
-                Helper.closeLogonSplash()
-                Helper.refreshAgenda()
-                Helper.refreshActivities()
-                
+                UI.closeLogonSplash()
+                UI.refreshAgenda()
+                UI.refreshActivities()
             })
             .catch(err => console.log(err))
         })
@@ -607,7 +600,7 @@ class Login {
     loginCancelEvent(){
         const button = document.getElementById(`form-cancel-button`)
         button.addEventListener("click", (e) => {
-            Helper.closeLogonSplash()
+            UI.closeLogonSplash()
         })
     }
     loginSubmitEvent(e){
@@ -622,21 +615,11 @@ class Login {
             name:e.target[0].value, 
             password:e.target[1].value,
         } 
-        fetch(SESSIONS_URL, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            body: JSON.stringify(data)
-        })
-        .then(resp => resp.json())
+        Fetcher.data(SESSIONS_URL, "POST", data)
         .then(res => {
-            // error handle failed login
             Login.updateSession(res)
-            Helper.closeLogonSplash()
-            Helper.refreshAgenda()
-            
+            UI.closeLogonSplash()
+            UI.refreshAgenda()
         })
         .catch(err => console.log(err))
     }
@@ -661,7 +644,7 @@ class Logout{
 
 class Agenda{ //handles fetching, management and display of a User's Agenda Items
     constructor(activity){
-        if (Helper.loggedIn()){
+        if (UI.loggedIn()){
             this.buildAgenda()
         }
         
@@ -688,9 +671,7 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
 
 
     //addAgendaItem method - Add Agenda Item to Agenda
-
     static add(activity){
-            console.log(activity)
                 const data = {
                     activity_id: activity.id,
                     user_id: session.id,
@@ -702,20 +683,12 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
                     downvotes: activity.downvotes,
                 } 
          
-                fetch(AGENDA_URL, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json",
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(resp => resp.json())
-                .catch(err => console.log(err))
+                Fetcher.data(AGENDA_URL, "POST", data)
                 .then(res => {
-                    Helper.refreshActivities()
+                    UI.refreshActivities()
                     new Agenda
-                }) 
+                })  
+                .catch(err => console.log(err))
     }
 }
 
@@ -736,10 +709,10 @@ class AgendaItem {
     render(){
         const agenda_node = document.createElement("div")
         agenda_node.setAttribute('class', 'agenda-card')
-        Helper.buildElement(agenda_node, "h4", "class", "agenda-title", `${this.name}`)
+        UI.buildElement(agenda_node, "h4", "class", "agenda-title", `${this.name}`)
        
-        Helper.buildElement(agenda_node, "button", "id", `${this.id}u`, `👍`)
-        Helper.buildElement(agenda_node, "button", "id",`${this.id}d`, `👎`)
+        UI.buildElement(agenda_node, "button", "id", `${this.id}u`, `👍`)
+        UI.buildElement(agenda_node, "button", "id",`${this.id}d`, `👎`)
 
         
         document.getElementById("agenda-wrapper").appendChild(agenda_node)
@@ -747,17 +720,9 @@ class AgendaItem {
     completeActivity(){
         session.babyPoints += 100
         
-        fetch(USERS_URL+"/"+session.id, {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            body: JSON.stringify({id: session.id, baby_points:session.babyPoints})
-        })
-        .then(resp => resp.json())
+        Fetcher.data(USERS_URL+"/"+session.id, "PUT", {id: session.id, baby_points:session.babyPoints}) 
         .then(res => {
-            Helper.refreshActivities()
+            UI.refreshActivities()
             new Baby(res)
         })
         .catch(err => console.log(err))
@@ -766,96 +731,40 @@ class AgendaItem {
     upvoteEvent(){
         const button = document.getElementById(this.id+"u")
         button.addEventListener("click", (e) => {
-          
-            this.upvoteSubmit()
+            this.voteSubmit("upvote")
         })
-    }
-    upvoteSubmit(){
-        const newUpvoteCount = this.upvotes+ 1
-  
-        const data = {
-            upvotes: newUpvoteCount,
-            id: this.activity_id,
-            user_id: session.id
-        } 
-     
-        fetch(ACTIVITIES_URL+`/${this.activity_id}`, {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-
-            body: JSON.stringify(data)
-        })
-        .then(resp => resp.json())
-        .then((res) => {
-            this.completeActivity()
-            console.log("Upvote Given!")}
-            )
-        .catch(err => console.log(err))
-
-        fetch(AGENDA_URL+`/${this.id}`, {
-            method: 'DELETE',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            body: JSON.stringify(data)
-        })
-        .then(resp => resp.json())
-        .then(data => {
-            new Agenda
-            Helper.refreshActivities()})
-        .catch(err => console.log(err))
     }
     downvoteEvent(){
-            const button = document.getElementById(this.id+"d")
-            button.addEventListener("click", (e) => {
-                this.downvoteSubmit()
-            })
+        const button = document.getElementById(this.id+"d")
+        button.addEventListener("click", (e) => {
+            this.voteSubmit("downvote")
+        })
     }
-    downvoteSubmit(){
-        const count = this.downvotes+ 1
-       
+
+    voteSubmit(voteType){
         const data = {
-            downvotes: count,
+            upvotes: this.upvotes,
+            downvotes: this.downvotes,
             id: this.activity_id,
             user_id: session.id
         } 
-     
-        fetch(ACTIVITIES_URL+`/${this.activity_id}`, {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-
-            body: JSON.stringify(data)
-        })
-        .then(resp => resp.json())
-        .then((res) => {
-            this.completeActivity()
-            console.log("vote Given!")}
-            )
+        if (voteType === "upvote"){
+            data.upvotes = this.upvotes+ 1
+          
+        } else if (voteType === "downvote") {
+            data.downvotes = this.downvotes+ 1
+        }
+    
+        Fetcher.data(ACTIVITIES_URL+`/${this.activity_id}`,"PUT",data)
+        .then(() => this.completeActivity())
         .catch(err => console.log(err))
 
-        fetch(AGENDA_URL+`/${this.id}`, {
-            method: 'DELETE',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            body: JSON.stringify(data)
-        })
-        .then(resp => resp.json())
-        .then(data => {
-            this.completeActivity()
+        Fetcher.data(AGENDA_URL+`/${this.id}`, "DELETE", data)
+        .then((res) => {
             new Agenda
-            Helper.refreshActivities()})
+            UI.refreshActivities()})
         .catch(err => console.log(err))
     }
-
 }
 
 class Baby{
@@ -905,16 +814,12 @@ class Baby{
     render(){
         const wrapper = document.getElementById("baby-wrapper")
         wrapper.innerHTML = ``
-        Helper.buildElement(wrapper, "h2", "id", "baby_profile_name", this.babyName)
-        Helper.buildElement(wrapper, "h3", "id", "baby_profile_xp", `Level:${this.babyLevel}`)
-        Helper.buildElement(wrapper, "h4", "id", "baby_profile_age", `${this.dateInfo.totalYears} year(s), ${this.dateInfo.remainingMonths} month(s) and ${this.dateInfo.remainingDays} day(s) old`)
+        UI.buildElement(wrapper, "h2", "id", "baby_profile_name", this.babyName)
+        UI.buildElement(wrapper, "h3", "id", "baby_profile_xp", `Level:${this.babyLevel}`)
+        UI.buildElement(wrapper, "h4", "id", "baby_profile_age", `${this.dateInfo.totalYears} year(s), ${this.dateInfo.remainingMonths} month(s) and ${this.dateInfo.remainingDays} day(s) old`)
     }
 }
 
 
 //Actual runtime
-Helper.refreshActivities()
-
-
-
-
+UI.refreshActivities()
