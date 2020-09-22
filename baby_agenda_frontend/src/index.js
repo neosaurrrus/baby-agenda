@@ -30,26 +30,7 @@ class Fetcher { //Responsible for handling fetches to the back end
 
 }
 
-class UI{
-    static getFetcher(url){
-        return fetch(url)
-        .then (res =>res.json())
-    }
-    static dataFetcher(url, method, data){
-        return (
-            fetch(url, {
-            method,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            body: JSON.stringify(data)
-        })
-        .then (res =>res.json())
-        )
-    }
-
-
+class UI{ //Performs DOM changes are that not unique for a given class
 
     static openActivitySplash(){
         const node = document.createElement("div")
@@ -99,8 +80,7 @@ class UI{
     }
 }
 
-
-class Activity{
+class Activity{ //Index of Activities
     constructor(activity){
         this.name = activity.name,
         this.id = activity.id,
@@ -120,18 +100,12 @@ class Activity{
     }
 
     render(){
-     
         const activity_node = document.createElement("div")
         const activity_votes_node = document.createElement("div")
         activity_node.setAttribute('class', 'activity-card')
         UI.buildElement(activity_node, "h3", "class", "activity-text", this.name)
-    
         UI.buildElement(activity_votes_node, "span", "class", "activity-upvotes", `😃 ${this.upvotes} `)
         UI.buildElement(activity_votes_node, "span", "class", "activity-upvotes", `😒 ${this.downvotes}`)
-          
-
-        
-        //Details Button
         UI.buildElement(activity_node, "button", "id", `show-button-${this.id}`, "Details")
         activity_node.appendChild(activity_votes_node)
         document.getElementById("activities-wrapper").appendChild(activity_node)
@@ -147,10 +121,9 @@ class Activity{
             })
         })
     }
-    
-} //end of activity
+} //End of Activity
 
-class ActivityShow { 
+class ActivityShow { //SHOWs details about a given activity
     constructor(activity){
         this.name = activity.name,
         this.id = activity.id,
@@ -178,7 +151,6 @@ class ActivityShow {
     }
 
     showAgendaEvent(){
-        
         const showAgendaButton = document.getElementById(`show-agenda-button`)
         showAgendaButton.addEventListener("click", (e) => {
             UI.closeActivitySplash()
@@ -270,7 +242,6 @@ class ActivityShow {
             UI.refreshActivities()
         })
         .catch(err => console.log(err))
-
     }
 
     submitDeleteActivity(){
@@ -283,9 +254,7 @@ class ActivityShow {
             UI.refreshActivities()
         })
         .catch(err => console.log(err))
-    
     }
-
 
     renderActivityShow(){
         const activity_node = document.createElement("div")
@@ -298,7 +267,6 @@ class ActivityShow {
         UI.buildElement(activity_node, "p", "class", "show-activity-downvotes", `Disiked: ${this.downvotes}`)
         document.getElementById("activities-wrapper").appendChild(activity_node)
         //buttons
-        console.log(this)
         if (UI.currentUser(this.user_id)){
             UI.buildElement(activity_node, "button", "id", "show-edit-button", `Edit`)
             UI.buildElement(activity_node, "button", "id", "show-delete-button", `Delete`)
@@ -316,7 +284,7 @@ class ActivityShow {
 } //end of ActivityShow
 
 
-class NewActivity {
+class NewActivity { //Builds a new activity 
     constructor(){ 
         this.renderNewActivityForm()
     }
@@ -409,7 +377,7 @@ class NewActivity {
     }
 }
 
-class Nav {
+class Nav { // Responsible for Nav bar elements
     constructor(){
         this.nav = document.querySelector("nav")
         this.session = document.querySelector("#session-status")
@@ -423,12 +391,7 @@ class Nav {
             this.renderLoginButton()
             this.renderSignupButton()
         }
-        
-
-       
     }
-
-    
 
     renderSession(){
             UI.buildElement(this.session, "div", "id", "session-text", `${session.name}`)  
@@ -462,7 +425,6 @@ class Nav {
         })
     }
 }
-
 class Signup {
     constructor(){
         this.renderSignupForm()
@@ -552,7 +514,6 @@ class Login {
         new Baby(user)
     }
    
-
     constructor(){ 
         this.renderNewLoginForm()
     }
@@ -647,8 +608,6 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
         if (UI.loggedIn()){
             this.buildAgenda()
         }
-        
-        //add new agenda to agenda area with subsequent mouseover for show and buttons
     }
 
     //all method - to show all agenda Items
@@ -666,11 +625,8 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
                return new AgendaItem(item)
            })
         }) 
-
     }
-
-
-    //addAgendaItem method - Add Agenda Item to Agenda
+  
     static add(activity){
                 const data = {
                     activity_id: activity.id,
@@ -691,7 +647,6 @@ class Agenda{ //handles fetching, management and display of a User's Agenda Item
                 .catch(err => console.log(err))
     }
 }
-
 class AgendaItem {
     constructor(item){
         this.name = item.name,
@@ -766,7 +721,6 @@ class AgendaItem {
         .catch(err => console.log(err))
     }
 }
-
 class Baby{
     constructor(user){
         this.babyPoints = user.baby_points
@@ -808,7 +762,6 @@ class Baby{
         this.dateInfo.remainingMonths= Math.floor(this.dateInfo.totalMonths % 12),
         this.dateInfo.remainingDays=Math.floor((this.dateInfo.totalDays % 365) % 30),
         this.dateInfo.remainingWeeks=Math.floor((this.dateInfo.totalDays % 365) / 7)
-
     }
 
     render(){
@@ -820,6 +773,7 @@ class Baby{
     }
 }
 
+//Actual thing that runs the App.
 
-//Actual runtime
+document.body.style.backgroundColor = `rgb(${(Math.random()*100+50)},${(Math.random()*100+50)},${(Math.random()*100+50)})`
 UI.refreshActivities()
