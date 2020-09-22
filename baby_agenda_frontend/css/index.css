@@ -3,6 +3,7 @@
     --darkground:rgba(20,20,20,0.6);
     --darkerground:rgba(20,20,20,0.8);
     --lightground:rgba(200,200,200,0.4);
+    --lighterground:rgba(200,200,200,0.2);
     --midground:rgba(168, 168, 168, 0.6);
     --darktext:rgba(68,68,68);
     --lighttext:rgba(223,223,223);
@@ -114,11 +115,10 @@ main {
     color: var(--lighttext);
     text-align: center;
     min-width: 500px;
-
     padding: 25px;
 }
 #activities-wrapper {
-    background: var(--lightground);
+    background: var(--lighterground);
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     grid-template-rows: 250px 250px 250px;
