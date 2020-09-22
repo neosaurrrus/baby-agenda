@@ -494,7 +494,6 @@ class Signup {
             .catch(err => console.log(err))
         })
     }
-    
 }
 
 class Login {
@@ -665,7 +664,6 @@ class AgendaItem {
         const agenda_node = document.createElement("div")
         agenda_node.setAttribute('class', 'agenda-card')
         UI.buildElement(agenda_node, "h4", "class", "agenda-title", `${this.name}`)
-       
         UI.buildElement(agenda_node, "button", "id", `${this.id}u`, `👍`)
         UI.buildElement(agenda_node, "button", "id",`${this.id}d`, `👎`)
 
