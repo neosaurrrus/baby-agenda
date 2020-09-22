@@ -2,7 +2,7 @@
 :root{
     --darkground:rgba(20,20,20,0.6);
     --darkerground:rgba(20,20,20,0.8);
-    --lightground:rgba(200,200,200,0.6);
+    --lightground:rgba(200,200,200,0.4);
     --midground:rgba(168, 168, 168, 0.6);
     --darktext:rgba(68,68,68);
     --lighttext:rgba(223,223,223);
@@ -12,7 +12,7 @@ html {
     margin: 0 auto;
 }
 body {
-    background-color: slategray;
+    background-color: rgb(101, 120, 206);
     font-family: adobe-garamond-pro, serif;
     font-size: 20px;
     font-style: normal;
@@ -20,7 +20,6 @@ body {
     color: var(--darktext);
     margin: 0 auto;
     text-align: center;
-    
 }
 
 button {
@@ -31,13 +30,17 @@ button {
 	color: var(--lighttext);
 	background-color: var(--darkerground);
 	border: 2px solid var(--lighttext);
-	width: 150px;
+    width: 150px;
+    transition: 0.4s all;
+}
+button:hover{
+    color: var(--darktext);
+	background-color: var(--lightground);
 }
 .logo{
     font-size: 5.0rem;
     font-weight: 400;
 }
-
 header {
     margin: 0 auto 25px;
     padding:50px;
@@ -49,12 +52,6 @@ header {
     flex-direction: column;
     justify-content: space-around; 
 }
-
-header button {
-
-}
-
-
 
 #activity-splash {
 	color: var(--lighttext);
@@ -81,8 +78,6 @@ header button {
     transform: translate(-50%, -50%);
     padding: 30px;
 }
-
-
 
 main {
 	display: grid;
@@ -140,8 +135,10 @@ main {
 	display: grid;
 	align-content: space-between;
     text-align: center;
-    padding: 10px
+    padding: 10px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.55)
 }
+
 
 .activity-card h4 {
     text-align: center;
@@ -152,7 +149,8 @@ main {
 	grid-template-columns: 4fr 60px 60px 60px;
 	align-items: center;
 	padding: 10px;
-	margin: 20px;
+    margin: 20px;
+    box-shadow: 0 7px 14px rgba(0,0,0,0.55)
 }
 
 .activity-card button {
