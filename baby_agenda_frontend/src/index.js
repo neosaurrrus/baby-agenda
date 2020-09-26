@@ -48,7 +48,6 @@ class UI{ //Performs DOM changes are that not unique for a given class
         if (loginSplash) {loginSplash.remove()}
         new Nav()
     }
-
     static refreshActivities(){
         document.getElementById(`activities-wrapper`).innerHTML = ""
         new Nav()
@@ -92,7 +91,11 @@ class Activity{ //Index of Activities
     static all(){
         document.getElementById(`activities-wrapper`).innerHTML = ""
         Fetcher.get(ACTIVITIES_URL).then( data => {
-            data.forEach(activity => {
+            const sortedData = data.sort((a,b)=>{
+                return a.name > b.name //account for edge cases lowercase etc. Santise data maybe before this point.
+              })
+           
+            sortedData.forEach(activity => {
               return new Activity(activity)
             })
         })
@@ -104,9 +107,9 @@ class Activity{ //Index of Activities
         const activity_votes_node = document.createElement("div")
         activity_node.setAttribute('class', 'activity-card')
         UI.buildElement(activity_node, "h3", "class", "activity-text", this.name)
+        UI.buildElement(activity_node, "button", "id", `show-button-${this.id}`, "Details")
         UI.buildElement(activity_votes_node, "span", "class", "activity-upvotes", `😃 ${this.upvotes} `)
         UI.buildElement(activity_votes_node, "span", "class", "activity-upvotes", `😒 ${this.downvotes}`)
-        UI.buildElement(activity_node, "button", "id", `show-button-${this.id}`, "Details")
         activity_node.appendChild(activity_votes_node)
         document.getElementById("activities-wrapper").appendChild(activity_node)
         this.setShowButtonEvent()
@@ -116,8 +119,8 @@ class Activity{ //Index of Activities
         const detailsButton = document.getElementById(`show-button-${this.id}`)
         detailsButton.addEventListener("click", (e) => {
             Fetcher.get(`http://localhost:3000/activities/${this.id}`)
-            .then( a => {
-                new ActivityShow(a)
+            .then( activity => {
+                new ActivityShow(activity)
             })
         })
     }
@@ -264,7 +267,7 @@ class ActivityShow { //SHOWs details about a given activity
         UI.buildElement(activity_node, "p", "class", "show-activity-minimum-age", `Minimum recommended age: ${this.minimum_age}`)
         UI.buildElement(activity_node, "p", "class", "show-activity-time-taken", `Minimum time: ${this.minimum_time_taken}`)
         UI.buildElement(activity_node, "p", "class", "show-activity-upvotes", `Liked: ${this.upvotes}`)
-        UI.buildElement(activity_node, "p", "class", "show-activity-downvotes", `Disiked: ${this.downvotes}`)
+        UI.buildElement(activity_node, "p", "class", "show-activity-downvotes", `Disliked: ${this.downvotes}`)
         document.getElementById("activities-wrapper").appendChild(activity_node)
         //buttons
         if (UI.currentUser(this.user_id)){
