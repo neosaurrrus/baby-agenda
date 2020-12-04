@@ -4,7 +4,7 @@ ideas you like the sound of to plan your day and let folks know if it was any go
 Built with Rails and Javascript.
 
 ## Installation
-Clone down this repo. Run bundler install to grab all the required dependancies. Run `rails db:migrate` to build the relevent databases and `rail s` to run it locally. The index.html file in the front end folder will run the frontend.
+Clone down this repo. Run `bundler install` to grab all the required dependancies. Run `rails db:migrate` to build the relevent databases and `rail s` to run it locally. The index.html file in the front end folder will run the frontend.
 
 **Currently this does not have the enviroment variables configured, so it will require modifying the endpoints found in the index.js folder**
 
